@@ -1,0 +1,27 @@
+# HTTPS in front of MISTER PLIS, with Caddy (docs/DEPLOY_LINUX.md, "HTTPS"). Used by docker-compose.https.yml; without
+# Docker, copy it to /etc/caddy/Caddyfile and change "mister-plis:8000" to "127.0.0.1:8000".
+#
+# MISTER_PLIS_DOMAIN: the name people open, e.g. mister-plis.lab.example.
+# MISTER_PLIS_TLS: where the certificate comes from —
+#   ""                                    a name the internet can reach: Caddy gets a certificate by itself (Let's Encrypt)
+#   "tls internal"                        a name only the lab's network knows: Caddy's own certificate authority; each
+#                                         computer trusts it once (the guide says how)
+#   "tls /certs/cert.pem /certs/key.pem"  a certificate from the university's IT, in the certs/ folder
+{$MISTER_PLIS_DOMAIN} {
+	{$MISTER_PLIS_TLS}
+
+	# the largest upload, a little above MISTER PLIS's own limit (Settings → Jobs & backup; 2048 MB unless changed)
+	request_body {
+		max_size 2100MB
+	}
+
+	reverse_proxy mister-plis:8000
+}
+
+# Stored files from a name of their own (mister_plis/fileorigin.py), optional: a second name for this server, e.g.
+# files.mister-plis.lab.example, with MISTER_PLIS_FILES_ORIGIN=https://files.mister-plis.lab.example for MISTER PLIS
+# (docker-compose.https.yml). Without it, files come from the name above, sandboxed, as before.
+# files.mister-plis.lab.example {
+# 	{$MISTER_PLIS_TLS}
+# 	reverse_proxy mister-plis:8001
+# }

@@ -1,0 +1,162 @@
+/* The lab notebook (moved from mister_plis/static/css/app.css in reorg P6): the side panel, the full page, its
+   System section. On every page. */
+
+/* ---------- lab notebook (Obsidian notes) ---------- */
+.notes-btn {
+  margin-left: auto; display: inline-flex; align-items: center; gap: 7px; min-height: 34px; padding: 0 12px;
+  border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink-2);
+  font-size: 13.5px; font-weight: 600; cursor: pointer;
+}
+.notes-btn:hover { color: var(--ink); border-color: var(--line-2); }
+.notes-btn.on { background: var(--accent-soft); color: var(--accent); border-color: color-mix(in srgb, var(--accent) 25%, var(--line)); }
+.notes-btn + .user-chip { margin-left: 4px; }
+
+.notes-panel, .notes-rail, .notes-scrim { display: none; }
+.notes-panel {
+  flex-direction: column; min-width: 0; background: var(--surface); border-left: 1px solid var(--line);
+  position: relative;
+}
+.notes-resize { position: absolute; left: -4px; top: 0; bottom: 0; width: 8px; cursor: col-resize; z-index: 2; }
+.notes-resize::after { content: ""; position: absolute; left: 2px; top: 50%; width: 4px; height: 40px; margin-top: -20px; border-radius: 3px; background: var(--line-2); opacity: 0; transition: opacity .15s; }
+.notes-resize:hover::after, .notes-resize:focus-visible::after, html.notes-resizing .notes-resize::after { opacity: 1; }
+html.notes-resizing { cursor: col-resize; user-select: none; }
+.notes-head { display: flex; align-items: center; gap: 8px; padding: 12px 12px 8px 16px; }
+.notes-head-icon { color: var(--accent); }
+.notes-head-text { flex: 1; min-width: 0; line-height: 1.25; }
+.notes-head-title { font-weight: 700; font-size: 15px; }
+.notes-head-sub { font-size: 12px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.notes-search {
+  display: flex; align-items: center; gap: 8px; margin: 0 16px 10px; padding: 0 10px;
+  border: 1px solid var(--line-2); border-radius: var(--radius-sm); background: var(--surface-2); color: var(--ink-3);
+}
+.notes-search:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); }
+.notes-search input { flex: 1; min-width: 0; border: 0; background: transparent; padding: 8px 0; outline: none; font-size: 14px; color: var(--ink); }
+.notes-body { flex: 1; overflow-y: auto; padding: 4px 16px 24px; border-top: 1px solid var(--line); scrollbar-width: thin; }
+
+.notes-group { margin-top: 12px; }
+summary.notes-folder { list-style: none; cursor: pointer; border-radius: 8px; user-select: none; }
+summary.notes-folder::-webkit-details-marker { display: none; }
+summary.notes-folder:hover { background: var(--surface-3); color: var(--ink-2); }
+summary.notes-folder::before {
+  content: ""; flex: none; width: 6px; height: 6px; margin: 0 4px 0 1px; border: solid currentColor;
+  border-width: 0 1.6px 1.6px 0; transform: rotate(-45deg); transition: transform .12s;
+}
+details[open] > summary.notes-folder::before { transform: rotate(45deg); margin-top: -3px; }
+.notes-folder { display: flex; align-items: center; gap: 6px; padding: 4px 10px; font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+.notes-folder span:first-of-type { flex: 1; min-width: 0; }
+.notes-folder .n { font-weight: 600; letter-spacing: 0; }
+.notes-item { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 10px; color: var(--ink-2); text-decoration: none; font-size: 14px; line-height: 1.35; }
+.notes-item .icon { color: var(--ink-3); }
+.notes-item:hover { background: var(--accent-soft); color: var(--ink); }
+.notes-item.active { background: var(--grad-soft); color: var(--accent); font-weight: 650; }
+.notes-hit { flex-direction: column; align-items: flex-start; gap: 1px; }
+.notes-hit-title { font-weight: 600; color: var(--ink); }
+.notes-hit-folder { font-size: 12px; color: var(--ink-3); }
+.notes-hit-snippet { font-size: 12.5px; color: var(--ink-2); }
+.notes-empty { color: var(--ink-3); font-size: 14px; padding: 16px 10px; }
+.notes-empty a { color: var(--accent); }
+
+.note-crumbs { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; padding: 10px 0 2px; font-size: 13px; color: var(--ink-3); }
+.note-back { display: inline-flex; align-items: center; gap: 2px; padding: 4px 0; border: 0; background: none; color: var(--accent); font-size: 13px; cursor: pointer; }
+.note-title { font-size: 22px; font-weight: 750; margin: 4px 0 12px; overflow-wrap: anywhere; }
+.note-body { font-size: 14.5px; overflow-wrap: anywhere; }
+.note-body h1 { font-size: 21px; margin: 22px 0 8px; }
+.note-body h2 { font-size: 18px; margin: 22px 0 8px; }
+.note-body h3, .note-body h4, .note-body h5, .note-body h6 { font-size: 15.5px; margin: 18px 0 6px; }
+.note-body p { margin: 8px 0; }
+.note-body ul, .note-body ol { padding-left: 22px; margin: 6px 0; }
+.note-body li { margin: 2px 0; }
+.note-body li.task { list-style: none; margin-left: -20px; }
+.note-body li.task input { margin: 0 6px 0 0; vertical-align: -2px; accent-color: var(--accent); }
+.note-body img { max-width: 100%; height: auto; border-radius: 8px; cursor: zoom-in; display: inline-block; vertical-align: top; }
+.note-body mark { background: color-mix(in srgb, #ffd84d 55%, transparent); color: inherit; border-radius: 3px; padding: 0 2px; }
+.note-body blockquote { margin: 10px 0; padding: 4px 14px; border-left: 3px solid var(--line-2); color: var(--ink-2); }
+.note-body hr { border: 0; border-top: 1px solid var(--line); margin: 18px 0; }
+.note-body pre { white-space: pre-wrap; }
+.note-table { overflow-x: auto; margin: 10px 0; }
+.note-table table { margin: 0; }
+a.wikilink { color: var(--accent); text-decoration: underline dotted; text-underline-offset: 3px; }
+a.wikilink:hover { text-decoration-style: solid; }
+.wikilink-missing { color: var(--ink-2); border-bottom: 1px dashed var(--line-2); cursor: help; }
+.note-missing { color: var(--ink-3); font-size: 13px; font-style: italic; }
+.note-embed { margin: 12px 0; padding: 10px 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); }
+.note-embed-title { display: inline-block; font-weight: 650; margin-bottom: 4px; }
+.callout { margin: 12px 0; padding: 10px 14px; border-radius: var(--radius-sm); background: var(--info-soft); }
+.callout > p { margin: 4px 0; }
+.callout-title { font-weight: 700; color: var(--info-ink); margin-bottom: 2px; }
+.callout-tip, .callout-success { background: var(--good-soft); }
+.callout-tip .callout-title, .callout-success .callout-title { color: var(--good-ink); }
+.callout-warning, .callout-question { background: var(--warn-soft); }
+.callout-warning .callout-title, .callout-question .callout-title { color: var(--warn-ink); }
+.callout-danger { background: var(--bad-soft); }
+.callout-danger .callout-title { color: var(--bad-ink); }
+.callout-quote { background: var(--surface-2); }
+.callout-quote .callout-title { color: var(--ink-2); }
+.note-backlinks { margin-top: 24px; padding-top: 12px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 14px; }
+.note-backlinks-head { flex-basis: 100%; font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+.note-foot { margin: 24px 0 0; font-size: 12.5px; color: var(--ink-3); }
+
+/* wide screens: the panel is a third column; closed, it leaves a thin rail */
+@media (min-width: 1100px) {
+  html.notes-on .shell { grid-template-columns: var(--side-w) minmax(0, 1fr) 44px; }
+  html.notes-on.notes-open .shell { grid-template-columns: var(--side-w) minmax(0, 1fr) clamp(300px, var(--notes-w, 440px), calc(100vw - var(--side-w) - 420px)); }
+  html.notes-on.notes-open .notes-panel { display: flex; position: sticky; top: 0; height: 100vh; }
+  html.notes-on:not(.notes-open) .notes-rail {
+    display: flex; flex-direction: column; align-items: center; gap: 10px; position: sticky; top: 0; height: 100vh;
+    padding: 16px 0; border: 0; border-left: 1px solid var(--line); background: var(--side); color: var(--ink-3); cursor: pointer;
+  }
+  .notes-rail:hover { color: var(--accent); background: var(--side-2); }
+  .notes-rail span { writing-mode: vertical-rl; font-size: 11.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+  html.notes-on.notes-open .content { max-width: none; }
+}
+/* small screens: it opens over the page */
+@media (max-width: 1099px) {
+  html.notes-on.notes-open .notes-panel {
+    display: flex; position: fixed; top: 0; right: 0; bottom: 0; z-index: 45; width: min(480px, 100vw);
+    box-shadow: var(--shadow-lg);
+  }
+  html.notes-on.notes-open .notes-scrim { display: block; position: fixed; inset: 0; z-index: 44; background: rgba(0, 0, 0, .35); }
+  .notes-resize { display: none; }
+}
+@media (max-width: 600px) { .notes-btn span { display: none; } .notes-btn { padding: 0 9px; } }
+@media print { .notes-panel, .notes-rail, .notes-btn, .notes-scrim { display: none !important; } }
+
+/* the full page */
+.notes-page { display: grid; grid-template-columns: minmax(240px, 320px) minmax(0, 1fr); gap: 20px; align-items: start; }
+.notes-index { position: sticky; top: 74px; max-height: calc(100vh - 100px); display: flex; flex-direction: column; padding-top: 14px; }
+.notes-index .notes-list { overflow-y: auto; padding: 0 10px 14px; }
+.notes-article { padding: 26px 34px 30px; min-width: 0; max-width: 900px; }
+.notes-article .note-title { font-size: 30px; }
+.notes-article .note-body { font-size: 15px; }
+.notes-welcome { display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; padding: 40px 20px; border: 1px dashed var(--line-2); border-radius: var(--radius); color: var(--ink-2); }
+@media (max-width: 820px) {
+  .notes-page { grid-template-columns: 1fr; }
+  .notes-index { position: static; max-height: 50vh; }
+  .notes-article { padding: 20px 18px; }
+}
+
+/* System page: notebook sync and folder choice */
+.notes-sys { margin-top: 20px; }
+.folder-list { padding: 10px 12px 6px; display: flex; flex-direction: column; }
+.folder-row { display: flex; align-items: center; gap: 10px; padding: 7px 8px; border-radius: 10px; cursor: pointer; font-size: 14px; }
+.folder-row:hover { background: var(--surface-2); }
+.folder-row input { width: 17px; height: 17px; margin: 0; accent-color: var(--accent); flex: none; }
+.folder-row .name { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.folder-row .count { color: var(--ink-3); font-size: 12.5px; white-space: nowrap; }
+.folder-row.is-covered { color: var(--ink-3); }
+.folder-row.is-covered input { opacity: .6; }
+.folder-empty { padding: 12px 20px; color: var(--ink-3); font-size: 14px; }
+@media (min-width: 1081px) { .notes-sys { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+/* with the notes open the page column is narrower than the window: lay out by its own width */
+.main { container-type: inline-size; container-name: main; }
+@container main (max-width: 900px) {
+  .tool-layout { grid-template-columns: minmax(0, 1fr); }
+  .form-panel { position: static; max-height: none; }
+  .sys-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+
+/* Settings → the notebook's repository, changed in place */
+.notes-repo-form { display: grid; gap: 10px; margin: 0 20px 14px; padding: 14px; border: 1px solid var(--line); border-radius: 12px; }
+.notes-repo-form label { display: grid; gap: 4px; font-size: 13px; }
+.notes-repo-form input { width: 100%; }

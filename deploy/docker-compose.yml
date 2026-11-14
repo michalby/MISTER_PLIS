@@ -1,0 +1,28 @@
+# MISTER PLIS with Docker Compose (docs/DEPLOY_LINUX.md, docs/DEPLOY_WINDOWS.md).
+#
+#   docker compose up -d          start it (and again after every change here)
+#   docker compose pull && docker compose up -d     update to a new image
+#
+# Then open http://<this computer>:8000 — a new instance opens its setup page. There, choose /storage as the storage
+# folder and /backup as the backup folder (or, in a lab file: [jobs] storage_folder = "/storage", [backup] folder =
+# "/backup").
+services:
+  mister-plis:
+    image: mister-plis:latest          # built with: docker build -t mister-plis .  (from the repository's folder)
+    build:
+      context: ..
+    restart: unless-stopped            # also brings the server back when it restarts itself (Settings → Restart)
+    ports:
+      - "8000:8000"
+      - "8001:8001"                    # stored files from an address of their own (docs/SECURITY_AUDIT.md; optional)
+    volumes:
+      - ./home:/srv/mister-plis        # the instance: config.toml, data/ (settings, people, Time Machine…), secrets/
+      - ./storage:/storage             # the jobs and what tools save (a big, fast disk)
+      - /mnt/nas/mister-plis:/backup   # the backup folder: the NAS, mounted on this computer (change the left side)
+    # environment:
+    #   MISTER_PLIS_LAB_FILE: /srv/mister-plis/labs/our-lab.toml   # set a new instance up from a lab file
+    #   MISTER_PLIS_SERVER_NAMES: "labserver, labserver.uni.example" # the names people open it by (IP addresses always
+    #                                                                # work; inside a container it can't know the host's)
+    # A GitHub token for private repositories: add it on Settings → Server & updates → GitHub access, or give it here
+    # from a file that never goes into git:
+    # env_file: secrets.env              # MISTER_PLIS_GIT_TOKEN=github_pat_…

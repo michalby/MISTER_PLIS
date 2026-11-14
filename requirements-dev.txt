@@ -1,0 +1,8 @@
+-r requirements.txt
+# scripts/lock.sh: pins requirements.txt into requirements.lock
+uv
+pytest>=8
+httpx>=0.27
+httpx2
+# reading the text of PDFs in the tests
+pypdfium2>=4.30

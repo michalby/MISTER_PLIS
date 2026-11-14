@@ -1,0 +1,63 @@
+<!doctype html>
+{#- The sign-in page (mister_plis/accounts.py): on its own, so nothing of the lab shows before someone signs in. -#}
+<html lang="{{ prefs.lang }}" data-theme="{{ 'dark' if prefs.theme == 'dark' else 'light' }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ _("Sign in") }} · MISTER PLIS</title>
+  <link rel="icon" href="/static/favicon.svg?v={{ asset_v }}" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/css/app.css?v={{ asset_v }}">
+  <script type="application/json" id="mp-boot">{"prefs": {{ {"theme": prefs.theme}|tojson }}}</script>
+  <script src="/static/js/boot.js?v={{ asset_v }}"></script>
+</head>
+<body data-page="login">
+<main class="login">
+  <div class="login-brand">
+    <svg class="egg" viewBox="0 0 34 42" aria-hidden="true">
+      <defs>
+        <linearGradient id="egg-fill" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#c4b5fd"/><stop offset=".55" stop-color="#f9a8d4"/><stop offset="1" stop-color="#93c5fd"/>
+        </linearGradient>
+      </defs>
+      <path d="M17 1.5C8.6 1.5 2 15 2 24.5 2 33.6 8.7 40.5 17 40.5S32 33.6 32 24.5C32 15 25.4 1.5 17 1.5z" fill="url(#egg-fill)"/>
+    </svg>
+    <div>
+      <div class="login-title">MISTER&nbsp;PLIS</div>
+      <div class="muted">{{ lab_name or _("lab toolbox") }}</div>
+    </div>
+  </div>
+
+  {% if change %}
+  <form class="panel login-card" id="change-form" novalidate>
+    <h1>{{ _("Choose your own password") }}</h1>
+    <p class="muted">{{ _("{name}, you signed in with a password an admin gave you. Choose your own now: at least 8 characters, one only you know.", name=name) }}</p>
+    <label class="field-label" for="new">{{ _("New password") }}</label>
+    <div class="control"><input type="password" id="new" autocomplete="new-password" required minlength="8"></div>
+    <label class="field-label" for="repeat">{{ _("The same again") }}</label>
+    <div class="control"><input type="password" id="repeat" autocomplete="new-password" required minlength="8"></div>
+    <div class="alert alert-warning" id="error" hidden></div>
+    <button type="submit" class="btn btn-primary">{{ _("Save and continue") }}</button>
+  </form>
+  {% else %}
+  <form class="panel login-card" id="login-form" novalidate>
+    <h1>{{ _("Sign in") }}</h1>
+    <label class="field-label" for="name">{{ _("Your name") }}</label>
+    <div class="control"><input type="text" id="name" autocomplete="username" required autofocus></div>
+    <label class="field-label" for="password">{{ _("Password") }}</label>
+    <div class="control"><input type="password" id="password" autocomplete="current-password" required></div>
+    <div class="alert alert-warning" id="error" hidden></div>
+    <button type="submit" class="btn btn-primary">{{ _("Sign in") }}</button>
+    <p class="muted small">{{ _("Forgot your password? An admin of the lab gives you a new one (Settings → People).") }}</p>
+  </form>
+  {% endif %}
+
+  <div class="lang-switch login-lang" role="radiogroup" aria-label="{{ _('Language') }}">
+    {% for code, label in langs.items() %}
+    <button type="button" role="radio" data-lang="{{ code }}" title="{{ label }}" aria-checked="{{ 'true' if prefs.lang == code else 'false' }}" class="{% if prefs.lang == code %}active{% endif %}">{{ code|upper }}</button>
+    {% endfor %}
+  </div>
+</main>
+<script id="login-data" type="application/json">{{ {"next": next, "differ": _("The two passwords differ."), "failed": _("Something went wrong — try again.")}|tojson }}</script>
+<script src="/static/js/login.js?v={{ asset_v }}"></script>
+</body>
+</html>

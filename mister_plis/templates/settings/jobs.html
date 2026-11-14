@@ -1,0 +1,78 @@
+{% from "settings/macros.html" import setting, scope %}
+<p class="lede tab-lede">{{ _("The lab's results live in two folders: the storage folder, where the server works on them, and the backup folder, where it copies them for safe keeping. These apply to the whole lab.") }}</p>
+
+{# the two folders at a glance: what is in each, and how things go from one to the other #}
+<div class="folders-map" aria-label="{{ _('The two folders') }}">
+  <div class="folder-box">
+    <div class="folder-box-head">{{ icon("folder", 18) }} <b>{{ _("Storage folder") }}</b> <span class="muted">· {{ _("where jobs are kept") }}</span></div>
+    <code class="folder-box-path" id="map-storage">…</code>
+    <ul>
+      <li>{{ _("each job: its inputs, results and full tables") }}</li>
+      <li>{{ _("what tools save for the lab") }}</li>
+      {% for p in module_panels("settings:jobs-storage-map") %}{% include p %}{% endfor %}
+    </ul>
+    <p class="setting-help">{{ _("The working copy. Best on a disk of this computer. Finished jobs are deleted from it after {n} days.", n=retention_days) }}</p>
+  </div>
+  <div class="folder-arrow" aria-hidden="true">{{ icon("chevron-right", 22) }}<span>{{ _("copied") }}</span></div>
+  <div class="folder-box{% if not lab.backup_dir %} is-off{% endif %}">
+    <div class="folder-box-head">{{ icon("download", 18) }} <b>{{ _("Backup folder") }}</b> <span class="muted">· {{ _("where copies go") }}</span></div>
+    <code class="folder-box-path">{{ lab.backup_dir or _("not set: no backups") }}</code>
+    <ul>
+      <li>{{ _("a readable copy of each finished job, one folder per person") }}</li>
+      {% for p in module_panels("settings:jobs-backup-map") %}{% include p %}{% endfor %}
+    </ul>
+    <p class="setting-help">{{ _("The safe copy. Best on a NAS or another disk. A job is deleted from the storage folder only once its copy here checks out.") }}</p>
+  </div>
+</div>
+
+<section class="panel" id="storage">
+  <div class="panel-head"><h2>{{ icon("folder", 18) }} {{ _("Storage folder") }} {{ scope(true) }}</h2></div>
+  {% call setting("Folder", "Where jobs are kept while the server works on them. To use another folder, type it here: the jobs and the tools' saved data are copied there and checked file by file, then the server restarts with it. The old folders are kept, renamed. Not while jobs are running.") %}
+    <div class="setting-input backup-dir">
+      <div class="control"><input type="text" id="storage-dir" spellcheck="false" placeholder="/Users/lab/MISTER PLIS storage" aria-label="{{ _('Storage folder') }}"></div>
+      <button type="button" class="btn btn-small" id="storage-btn" disabled>{{ _("Move here") }}</button>
+    </div>
+  {% endcall %}
+  {% call setting("Largest upload (MB)", "The largest file one may upload to a tool or to Time Machine, so a mistake can't fill the disk.") %}
+    <div class="setting-input backup-dir">
+      <div class="control"><input type="number" id="max-upload" min="1" step="1" value="{{ lab.max_upload_mb or lab.default_max_upload_mb }}" aria-label="{{ _('Largest upload (MB)') }}"></div>
+      <button type="button" class="btn btn-small" id="max-upload-save">{{ _("Save") }}</button>
+    </div>
+  {% endcall %}
+  <dl class="kv" id="storage-info"><dt>{{ _("Loading…") }}</dt><dd></dd></dl>
+  <div class="sync-log" id="storage-log" hidden></div>
+</section>
+
+<section class="panel" id="lab-panel">
+  <script type="application/json" id="lab-info">{{ lab|tojson }}</script>
+  <div class="panel-head"><h2>{{ icon("download", 18) }} {{ _("Backup folder") }} {{ scope(true) }}</h2></div>
+  {% call setting("Folder", "Where finished jobs are copied for safe keeping (e.g. a mounted NAS or an external disk), one folder per person. Must not be inside the storage folder. Leave empty to turn backups off.") %}
+    <div class="setting-input backup-dir">
+      <div class="control"><input type="text" id="backup-dir" spellcheck="false" placeholder="/Volumes/LabNAS/MISTER PLIS" value="{{ lab.backup_dir }}"></div>
+      <button type="button" class="btn btn-small" id="backup-dir-save">{{ _("Save") }}</button>
+    </div>
+  {% endcall %}
+  {% call setting("Back up after", "How long after a job finishes its files are copied. A short delay leaves time to re-run a job with corrected inputs.") %}
+    <div class="seg" id="backup-after" role="radiogroup">
+      {% for d in lab.after_choices %}
+      <button type="button" role="radio" data-value="{{ d }}" class="{% if d == lab.backup_after_days %}active{% endif %}" aria-checked="{{ 'true' if d == lab.backup_after_days else 'false' }}">{{ _("Right away") if d == 0 else _n(d, "{n} day", "{n} days") }}</button>
+      {% endfor %}
+    </div>
+  {% endcall %}
+  {% call setting("Backup status", "") %}
+    <div class="setting-help" id="backup-status"></div>
+    <div class="seg"><button type="button" id="backup-now">{{ _("Back up now") }}</button><button type="button" id="backup-verify">{{ _("Check the backups") }}</button><button type="button" id="backup-upgrade" hidden>{{ _("Update old backups") }}</button></div>
+    <div class="setting-help">{{ _("A backup folder holds, for each job: README.md (everything about it), results.xlsx (every table), plots, report.pdf, the tool's files, and a mister-plis folder that lets Jobs & results bring the job back. While a backup folder is set, a job is deleted from the server only once its copy is there and checks out.") }}</div>
+  {% endcall %}
+</section>
+
+<section class="panel" id="history-panel">
+  <div class="panel-head"><h2>{{ icon("clock", 18) }} {{ _("Job history") }} {{ scope(true) }}</h2></div>
+  {% call setting("Clear job history", "Removes jobs from Jobs & results and deletes their result files from the server. Results not backed up yet can be copied to the backup folder first. Running jobs are left alone. “My jobs” are the ones run under your name.") %}
+    <div class="seg clear-history">
+      <button type="button" data-scope="mine"{% if not prefs.name %} disabled title="{{ _('Set your name on the You tab first') }}"{% endif %}>{{ _("My jobs…") }}</button>
+      <button type="button" data-scope="all">{{ _("Everyone's…") }}</button>
+    </div>
+  {% endcall %}
+</section>
+{% for p in module_panels("settings:jobs") %}{% include p %}{% endfor %}

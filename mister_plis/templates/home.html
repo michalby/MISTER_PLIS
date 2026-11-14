@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block page %}home{% endblock %}
+{% block crumbs %}<span>{{ _("All tools") }}</span>{% endblock %}
+{% block content %}
+<section class="hero">
+  <p class="eyebrow" id="greeting">{{ _("Welcome") }}</p>
+  <h1 class="hero-title">{{ _("What are we processing today?") }}</h1>
+  <p class="acronym">
+    Multi-purpose Interface for Scientific Tools, Experimental Results, Processing, Laboratory Integration &amp; Statistics
+  </p>
+</section>
+
+{% if broken %}
+<div class="alert alert-warning">
+  <strong>{{ _n(broken|length, "{n} tool file failed to load.", "{n} tool files failed to load.") }}</strong>
+  {% for b in broken %}<details><summary><code>{{ b.module }}</code></summary><pre>{{ b.error }}</pre></details>{% endfor %}
+</div>
+{% endif %}
+
+{% if not categories %}
+<div class="alert" id="no-tools">
+  <strong>{{ _("No tools yet.") }}</strong>
+  {{ _("Tools come from tool sources: git repositories of tools. Add or switch one on Settings → Tools, then restart.") }}
+  <a href="/settings#tools" class="link">{{ _("Settings") }} → {{ _("Tools") }}</a>
+</div>
+{% endif %}
+
+<div class="empty-search" id="empty-search" hidden>{{ _("No tool matches that search.") }}</div>
+
+{% for cat, items in categories %}
+<section class="cat-section" data-cat>
+  <h2 class="section-title">{{ _(cat) }} <span class="count">{{ items|length }}</span></h2>
+  <div class="tool-grid">
+    {% for t in items %}
+    {% set reason = unavailable(t) %}
+    <a class="tool-card {% if reason %}is-unavailable{% endif %}" href="/tool/{{ t.id }}"
+       data-search="{{ search_text(t) }}">
+      <span class="tile tone-{{ tone(cat) }}">{{ icon(t.icon, 22) }}</span>
+      <span class="tool-card-body">
+        <span class="tool-card-name">{{ _(t.name) }}
+          {% if t.live %}<span class="chip chip-live">{{ _("live") }}</span>{% endif %}
+          {% if t.background %}<span class="chip">{{ _("background") }}</span>{% endif %}
+        </span>
+        <span class="tool-card-desc">{{ _(t.description) }}</span>
+        {% if reason %}<span class="tool-card-warn">{{ icon("alert", 14) }} {{ _(reason) }}</span>{% endif %}
+      </span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endfor %}
+
+<section class="recent" id="recent" hidden>
+  <div class="section-head">
+    <h2 class="section-title">{{ _("Recent results") }}</h2>
+    <a href="/jobs" class="link">{{ _("All jobs") }} →</a>
+  </div>
+  <div class="job-list" id="recent-list"></div>
+</section>
+{% endblock %}
+{% block scripts %}<script src="/static/js/jobs.js?v={{ asset_v }}"></script>{% endblock %}

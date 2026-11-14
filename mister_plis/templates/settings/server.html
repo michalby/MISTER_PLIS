@@ -1,0 +1,117 @@
+{% from "settings/macros.html" import setting, scope %}
+<p class="lede tab-lede">{{ _("The lab's name, the version this server runs and how it updates. Pull the newest version from GitHub: the server restarts itself and everyone gets the update on their next refresh.") }}</p>
+
+<section class="panel" id="lab-name-panel">
+  <div class="panel-head"><h2>{{ icon("egg", 18) }} {{ _("The lab") }} {{ scope(true) }}</h2></div>
+  {% call setting("The lab's name", "Shown under “MISTER PLIS” at the top of the sidebar, and printed on PDF reports and in the backups. Leave empty for “lab toolbox”.") %}
+    <div class="setting-input backup-dir">
+      <div class="control"><input type="text" id="lab-name" maxlength="60" spellcheck="false" placeholder="{{ lab.lab_name_default or _('e.g. Smith Lab') }}" value="{{ lab.lab_name }}"></div>
+      <button type="button" class="btn btn-small" id="lab-name-save">{{ _("Save") }}</button>
+    </div>
+  {% endcall %}
+</section>
+
+<section class="panel" id="reach-panel">
+  <div class="panel-head"><h2>{{ icon("galaxy", 18) }} {{ _("How people reach this server") }}</h2></div>
+  <p class="panel-text">{{ _("Give a new person one of these addresses and an account (Settings → People): they sign in from any computer, phone or tablet on the lab's network. Nothing has to be set up on their devices.") }}</p>
+  <ul class="reach-list">{% for a in reach %}<li><code>{{ a }}</code></li>{% endfor %}</ul>
+  {% if ".local" in reach|join(" ") %}<p class="panel-text muted small">{{ _("Some Android phones and Windows computers don't know .local names: give them the address with numbers. A fixed address for this computer (set in the lab's router) keeps it from changing.") }}</p>{% endif %}
+  {% if account_mode == "open" %}<p class="panel-text"><b>{{ _("No accounts yet: anyone on the lab's network can use this server, settings included. Make your own account first (Settings → People).") }}</b></p>{% endif %}
+  {% if instance_id %}<p class="panel-text muted small">{{ _("This server's id: {id}").format(id=instance_id) }}</p>{% endif %}
+</section>
+
+<section class="panel" id="lab-setup-panel">
+  <div class="panel-head"><h2>{{ icon("settings", 18) }} {{ _("Lab setup") }} {{ scope(true) }}</h2>
+    <span class="badge {{ 'ok' if setup_state.status == 'set_up' else '' }}">{% if setup_state.status == "set_up" %}{{ _("set up") }}{% elif setup_state.status == "skipped" %}{{ _("skipped") }}{% else %}{{ _("not set up") }}{% endif %}</span></div>
+  <p class="panel-text">{{ _("Everything that makes this server your lab's — its tool sources, modules and their repositories, folders, printer — in one place, from a lab file or by hand. Download this lab's file to set up another computer the same way (python -m mister_plis setup <file>), or to keep it.") }}</p>
+  {% if setup_state.status == "set_up" and setup_state.at %}
+  <p class="panel-text muted">{% if setup_state["from"] == "migrated" %}{{ _("Set up before lab files existed.") }}{% else %}{{ _("Last set up {when} by {who}, from {source}.").format(when=setup_state.when, who=setup_state.by or "—", source=_("the setup page") if setup_state["from"] == "page" else setup_state["from"]) }}{% endif %}</p>
+  {% endif %}
+  <div class="sync-actions">
+    <a class="btn btn-primary" href="/setup">{{ icon("settings", 16) }}<span>{{ _("Open the setup") }}</span></a>
+    <a class="btn" href="/api/setup/export" download>{{ icon("download", 16) }}<span>{{ _("Download this lab's file") }}</span></a>
+  </div>
+</section>
+
+<section class="panel" id="git-access-panel">
+  <div class="panel-head"><h2>{{ icon("branch", 18) }} {{ _("GitHub access") }} {{ scope(true) }}</h2></div>
+  <p class="panel-text">{{ _("Tokens this server uses to read and update the lab's repositories: the tool sources you trust, the modules' repositories and the code itself. A GitHub token reaches one owner's repositories, so add one per owner (or per repository) when they belong to different owners. A token stays on this server only: it is never shown again, never in a lab file and never copied when the server moves.") }}</p>
+  <ul class="cred-list" id="cred-list"></ul>
+  <p class="panel-text muted" id="cred-other"></p>
+  <div class="setting">
+    <div class="setting-label">{{ _("Add a token") }}</div>
+    <div class="setting-help">{{ _("The owner is a GitHub user or organisation. Leave the repository empty for all of that owner's repositories, and the owner empty for every repository on that host. A token for the same owner and repository replaces the one before.") }}</div>
+    <div class="cred-form">
+      <div class="control"><input type="text" id="cred-host" value="github.com" spellcheck="false" aria-label="{{ _('Host') }}" placeholder="github.com"></div>
+      <div class="control"><input type="text" id="cred-owner" spellcheck="false" aria-label="{{ _('Owner') }}" placeholder="{{ _('Owner') }}"></div>
+      <div class="control"><input type="text" id="cred-repo" spellcheck="false" aria-label="{{ _('Repository (optional)') }}" placeholder="{{ _('Repository (optional)') }}"></div>
+      <div class="control"><input type="password" id="cred-token" autocomplete="off" spellcheck="false" aria-label="{{ _('Token') }}" placeholder="{{ _('Token') }}"></div>
+      <button type="button" class="btn btn-small" id="cred-add">{{ _("Add the token") }}</button>
+    </div>
+  </div>
+</section>
+
+<section class="panel" id="transfer-panel">
+  <div class="panel-head"><h2>{{ icon("upload", 18) }} {{ _("Move this server") }} {{ scope(true) }}</h2></div>
+  <p class="panel-text">{{ _("Copy everything this server holds — the jobs, the lab's settings, people, feedback, and what each module keeps (with changes not sent anywhere yet) — into one folder, every file checked. A new server (another Mac, the faculty's server) takes it in on its setup page, or with python -m mister_plis transfer import <folder>. Nothing here changes; the GitHub token isn't copied (the new server asks for its own).") }}</p>
+  {% call setting("Copy into", "A folder on this server: a USB disk, the NAS, or a folder you then copy over. A new folder “MISTER PLIS <lab> <date>” is made inside it. Not while jobs are running.") %}
+    <div class="setting-input backup-dir">
+      <div class="control"><input type="text" id="transfer-dir" spellcheck="false" placeholder="/Volumes/USB" aria-label="{{ _('Copy into') }}"></div>
+      <button type="button" class="btn btn-small" id="transfer-btn">{{ _("Copy everything") }}</button>
+    </div>
+  {% endcall %}
+  <div class="sync-log" id="transfer-log" hidden></div>
+</section>
+
+<section class="panel" id="snapshots-panel">
+  <div class="panel-head"><h2>{{ icon("clock", 18) }} {{ _("Snapshots of the lab's settings") }} {{ scope(true) }}</h2></div>
+  <p class="panel-text">{{ _("Before every update the server copies the lab's settings — name, tool sources, modules' settings, printer, people — into a snapshot (the newest five are kept). Restoring one brings those settings back and restarts the server; jobs, Time Machine and the inventory's data stay as they are.") }}</p>
+  <ul class="cred-list" id="snapshot-list"></ul>
+  <div class="sync-actions"><button type="button" class="btn" id="snapshot-now">{{ _("Make a snapshot now") }}</button></div>
+</section>
+
+<div class="sys-grid">
+  <section class="panel sync-panel" id="version">
+    <div class="panel-head">
+      <h2>{{ icon("branch", 18) }} {{ _("Version") }}</h2>
+      <span class="badge" id="sync-badge">…</span>
+    </div>
+    <dl class="kv" id="git-info"><dt>{{ _("Loading…") }}</dt><dd></dd></dl>
+    <div id="incoming"></div>
+    <div class="sync-actions">
+      <button class="btn" id="check-btn">{{ icon("search", 16) }}<span>{{ _("Check for updates") }}</span></button>
+      <button class="btn btn-primary" id="sync-btn">{{ icon("sync", 16) }}<span>{{ _("Sync with git") }}</span></button>
+    </div>
+    <div class="sync-log" id="sync-log" hidden></div>
+    <div class="branch-pick" id="branch-pick">
+      <div class="branch-pick-head">
+        <span class="field-label">{{ _("Run another branch") }}</span>
+        <span class="setting-help">{{ _("For trying out work in progress, e.g. on your own computer. The server switches to that branch on GitHub and restarts; Sync with git then follows it. Applies to everyone using this server.") }}</span>
+      </div>
+      <div class="branch-pick-row">
+        <div class="control"><select id="branch-select" aria-label="{{ _('Branch') }}"><option value="">{{ _("Loading…") }}</option></select></div>
+        <button type="button" class="btn" id="branch-btn" disabled>{{ icon("branch", 16) }}<span>{{ _("Switch") }}</span></button>
+      </div>
+    </div>
+    <div class="branch-pick" id="auto-update">
+      <div class="branch-pick-head">
+        <span class="field-label">{{ _("Update by itself") }}</span>
+        <span class="setting-help">{{ _("For code pushed to GitHub from elsewhere (Claude Code on the web, another computer). At night the server pulls it and restarts — only when no job is running and nothing was edited on this machine.") }}</span>
+      </div>
+      <div class="branch-pick-row">
+        <div class="control"><select id="auto-update-select" aria-label="{{ _('Update by itself') }}">
+          <option value="off">{{ _("only by hand (Sync with git)") }}</option>
+          <option value="night">{{ _("every night, between 3 and 5 am") }}</option>
+        </select></div>
+      </div>
+      <div class="setting-help" id="auto-update-last"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="server-panel">
+    <div class="panel-head"><h2>{{ icon("grid", 18) }} {{ _("Server") }}</h2></div>
+    <dl class="kv" id="server-info"><dt>{{ _("Loading…") }}</dt><dd></dd></dl>
+    <div class="sync-actions"><button class="btn" id="restart-btn">{{ _("Restart server") }}</button></div>
+  </section>
+</div>
+{% for p in module_panels("settings:server") %}{% include p %}{% endfor %}

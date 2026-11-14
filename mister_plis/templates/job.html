@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{# A job whose tool isn't installed on this server any more (its tool source was removed or switched off):
+   its results can still be read, printed and backed up — only running it again needs the tool. #}
+{% block title %}{{ _(tool_name) }} · MISTER PLIS{% endblock %}
+{% block page %}job{% endblock %}
+{% block head %}<script src="/vendor/plotly.min.js" defer></script>{% endblock %}
+{% block crumbs %}<a href="/jobs">{{ _("Jobs & results") }}</a><span class="sep">/</span><span class="here"><code>{{ job_id }}</code></span>{% endblock %}
+{% block content %}
+<header class="tool-head">
+  <div>
+    <p class="eyebrow">{{ _("Jobs & results") }}</p>
+    <h1>{{ _(tool_name) }}</h1>
+  </div>
+</header>
+<div class="alert alert-warning">{{ icon("alert", 16) }} <span>{{ _("The tool that made this result isn't installed on this server any more (tool source: {source}). The result can be read, printed and backed up; to run it again, the tool is needed.", source=source or "—") }}</span></div>
+<section class="results" id="job-results" data-job="{{ job_id }}" aria-live="polite"><div class="muted pad">{{ _("Loading…") }}</div></section>
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/outputs.js?v={{ asset_v }}"></script>
+<script src="/static/js/job.js?v={{ asset_v }}"></script>
+{% endblock %}

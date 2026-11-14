@@ -1,0 +1,46 @@
+{% from "settings/macros.html" import scope %}
+{% if person.role == "admin" %}
+<section class="panel" id="accounts-panel" data-mode="{{ account_mode }}">
+  <div class="panel-head"><h2>{{ icon("user", 18) }} {{ _("Accounts") }} {{ scope(true) }}</h2></div>
+  {% if account_mode == "open" %}
+  <p class="panel-text">{{ _("Sign-in is off: anyone who can reach this server can use it and change its settings. Make the first account — yours, as an admin — to turn sign-in on. From then on everyone signs in, and only admins change Settings; you add the others' accounts here.") }}</p>
+  <form class="account-form" id="first-account" novalidate>
+    <label class="field"><span class="field-label">{{ _("Your name") }}</span>
+      <div class="control"><input type="text" name="name" maxlength="60" autocomplete="username" value="{{ prefs.name }}" placeholder="{{ _('e.g. Anna Kowalska') }}"></div></label>
+    <label class="field"><span class="field-label">{{ _("Password") }}</span>
+      <div class="control"><input type="password" name="password" autocomplete="new-password" minlength="8"></div></label>
+    <label class="field"><span class="field-label">{{ _("The same again") }}</span>
+      <div class="control"><input type="password" name="repeat" autocomplete="new-password" minlength="8"></div></label>
+    {% if first_needs_code %}
+    <label class="field"><span class="field-label">{{ _("This server's setup code") }}</span>
+      <div class="control"><input type="text" name="code" autocomplete="off" spellcheck="false" placeholder="ABCD-EFGH"></div>
+      <span class="setting-help">{{ _("The server shows it when it starts (in its window or log); on the server, python -m mister_plis setup-code shows it again. On the server's own computer it isn't needed.") }}</span></label>
+    {% endif %}
+    <div><button type="submit" class="btn btn-primary">{{ _("Make my account and turn sign-in on") }}</button></div>
+  </form>
+  {% else %}
+  <p class="panel-text">{{ _("Everyone signs in with their own account. Admins may change Settings; members do the everyday work. A new account gets a temporary password, shown once: its person chooses their own the first time they sign in. The name is the one on their results.") }}</p>
+  <ul class="cred-list" id="account-list"><li class="muted">{{ _("Loading…") }}</li></ul>
+  <form class="cred-form account-add" id="account-add" novalidate>
+    <div class="control"><input type="text" name="name" list="account-people" maxlength="60" spellcheck="false" placeholder="{{ _('Name, e.g. Anna Kowalska') }}" aria-label="{{ _('Name') }}"></div>
+    <datalist id="account-people"></datalist>
+    <div class="control"><select name="role" aria-label="{{ _('Role') }}"><option value="member">{{ _("Member") }}</option><option value="admin">{{ _("Admin") }}</option></select></div>
+    <button type="submit" class="btn btn-small">{{ _("Add the account") }}</button>
+  </form>
+  <div class="sync-log" id="account-new" hidden></div>
+  <details class="activity" id="activity">
+    <summary>{{ _("Activity: sign-ins, accounts and changes to the lab's settings") }}</summary>
+    <ul class="activity-list" id="activity-list"></ul>
+  </details>
+  {% endif %}
+</section>
+{% endif %}
+<section class="panel people-panel" id="people-panel">
+  <div class="panel-head">
+    <h2>{{ icon("user", 18) }} {{ _("People") }} {{ scope(true) }}</h2>
+    <span class="muted" id="people-sum"></span>
+  </div>
+  <p class="panel-text">{{ _("Everyone who added anything to MISTER PLIS — ran a job, sent feedback or kept something in Time Machine — under the name set in the top bar. Click a name to see their jobs; if one person is here under two names, merge them.") }}</p>
+  <div class="people-list" id="people-list"><div class="fb-empty">{{ _("Loading…") }}</div></div>
+</section>
+{% for p in module_panels("settings:people") %}{% include p %}{% endfor %}

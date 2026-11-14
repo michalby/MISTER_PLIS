@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Settings") }} · MISTER PLIS{% endblock %}
+{% block page %}settings{% endblock %}
+{% block crumbs %}<span class="here">{{ _("Settings") }}</span>{% endblock %}
+
+{% block content %}
+<div class="settings-page" data-tabs data-tab-default="{{ default_tab }}"
+     data-tab-aliases='{"feedback": "/feedback", "fb-list": "/feedback"}'>
+  <header class="page-head settings-head">
+    <h1>{{ _("Settings") }}</h1>
+    <p class="lede">{{ _("Some settings are yours alone and kept in this browser; the others apply to the whole lab. Each one says which.") }}</p>
+    {% if person.role != "admin" %}<div class="alert alert-warning">{{ icon("alert", 16) }}<span>{{ _("Only someone who may change the lab's settings can change what is here.") }}</span></div>{% endif %}
+  </header>
+
+  <nav class="tabs settings-tabs" role="tablist" aria-label="{{ _('Settings') }}">
+    {% for t in tabs %}
+    <a href="#tab-{{ t.id }}" class="tab{% if t.id == default_tab %} active{% endif %}" role="tab" id="tabbtn-{{ t.id }}" data-tab="{{ t.id }}"
+       aria-controls="tab-{{ t.id }}" aria-selected="{{ 'true' if t.id == default_tab else 'false' }}">{{ icon(t.icon, 15) }}<span>{{ _(t.label) }}</span></a>
+    {% endfor %}
+  </nav>
+
+  {% for t in tabs %}
+  <section class="tabpanel{% if t.id == default_tab %} is-active{% endif %}" role="tabpanel" id="tab-{{ t.id }}" data-tab="{{ t.id }}" aria-labelledby="tabbtn-{{ t.id }}">
+    <h2 class="tabpanel-title">{{ icon(t.icon, 18) }} {{ _(t.label) }}</h2>
+    {% include t.template %}
+  </section>
+  {% endfor %}
+</div>
+{% endblock %}
+{% block scripts %}<script src="/static/js/label.js?v={{ asset_v }}"></script>
+<script src="/static/js/settings.js?v={{ asset_v }}"></script>{% endblock %}

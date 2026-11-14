@@ -1,0 +1,35 @@
+{# Settings → Lab notebook: check and sync the notes, choose the shown folders (static/notes_admin.js) #}
+<div class="sys-grid notes-sys">
+  <section class="panel" id="notes-sync-panel">
+    <div class="panel-head">
+      <h2>{{ icon("book", 18) }} {{ _("Lab notebook (Obsidian)") }}</h2>
+      <span class="badge" id="notes-badge">…</span>
+    </div>
+    <dl class="kv" id="notes-info"><dt>{{ _("Loading…") }}</dt><dd></dd></dl>
+    <div id="notes-incoming"></div>
+    <div class="sync-actions">
+      <button class="btn" id="notes-check-btn">{{ icon("search", 16) }}<span>{{ _("Check for updates") }}</span></button>
+      <button class="btn btn-primary" id="notes-sync-btn">{{ icon("sync", 16) }}<span>{{ _("Sync notes") }}</span></button>
+    </div>
+    <div class="branch-pick">
+      <div class="branch-pick-head">
+        <span class="field-label">{{ _("Sync by itself") }}</span>
+        <span class="setting-help">{{ _("For notes edited in Obsidian on other computers and pushed to GitHub by its Git plugin. Never restarts the server.") }}</span>
+      </div>
+      <div class="branch-pick-row"><div class="control"><select id="notes-auto" aria-label="{{ _('Sync by itself') }}">
+        <option value="0">{{ _("only by hand") }}</option>
+        <option value="15">{{ _("every 15 min") }}</option>
+        <option value="60">{{ _("every hour") }}</option>
+        <option value="240">{{ _("every 4 hours") }}</option>
+      </select></div></div>
+    </div>
+    <div class="sync-log" id="notes-log" hidden></div>
+  </section>
+
+  <section class="panel" id="notes-folders-panel">
+    <div class="panel-head"><h2>{{ icon("folder", 18) }} {{ _("Folders shown to the lab") }}</h2><span class="muted" id="notes-folder-sum"></span></div>
+    <p class="panel-text">{{ _("Only ticked folders are downloaded and shown. Pictures come along when a shown note uses them. Links to notes in other folders appear as plain text. This is the same for everyone.") }}</p>
+    <div class="folder-list" id="notes-folders"></div>
+    <div class="sync-actions"><button class="btn btn-primary" id="notes-save-btn" disabled>{{ _("Save and sync") }}</button></div>
+  </section>
+</div>

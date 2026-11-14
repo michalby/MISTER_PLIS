@@ -1,0 +1,9 @@
+{# Jobs & results → Filters: kept in Time Machine or not (a "flag filter": jobs.js reads data-flag on its own) #}
+<div class="filter-field">
+  <span class="field-label">{{ _("Time Machine") }}</span>
+  <div class="seg seg-small" data-flag="in_tm">
+    <button type="button" class="active" data-want="">{{ _("Any") }}</button>
+    <button type="button" data-want="in">{{ _("Kept") }}</button>
+    <button type="button" data-want="out">{{ _("Not kept") }}</button>
+  </div>
+</div>

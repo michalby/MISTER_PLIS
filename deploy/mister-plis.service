@@ -1,0 +1,26 @@
+# MISTER PLIS as a Linux service (systemd), without Docker — docs/DEPLOY_LINUX.md.
+#
+# Change the user and the two folders, then:
+#   sudo cp deploy/mister-plis.service /etc/systemd/system/
+#   sudo systemctl daemon-reload && sudo systemctl enable --now mister-plis
+#   journalctl -u mister-plis -f        (what it says)
+[Unit]
+Description=MISTER PLIS (the lab's toolbox)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=misterplis
+# the code: a git clone, set up with ./scripts/setup.sh
+WorkingDirectory=/opt/MISTER_PLIS
+# the instance: config.toml, data/, secrets/ (apart from the code)
+Environment=MISTER_PLIS_HOME=/srv/mister-plis
+Environment=MISTER_PLIS_INSTALL=service
+# the server restarts itself by exiting; systemd starts it again
+Environment=MISTER_PLIS_SUPERVISED=1
+ExecStart=/opt/MISTER_PLIS/.venv/bin/python -m mister_plis
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

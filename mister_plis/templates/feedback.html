@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}{{ _c("page", "Feedback") }} · MISTER PLIS{% endblock %}
+{% block page %}feedback{% endblock %}
+{% block crumbs %}<span class="here">{{ _c("page", "Feedback") }}</span>{% endblock %}
+{% block content %}
+<header class="page-head">
+  <h1>{{ _("Feedback from the lab") }}</h1>
+  <p class="lede">{{ _("Bugs, inconveniences and feature ideas sent with the glowing button at the top of every page — a to-do list for future work. Mark what is done; it stays here, crossed out, until you delete it.") }}</p>
+</header>
+
+<section class="panel fb-panel fb-page" id="feedback">
+  <div class="panel-head">
+    <h2>{% with flask_id = "-page" %}{% include "partials/flask.html" %}{% endwith %} {{ _("Everything sent") }}</h2>
+    <span class="muted" id="fb-sum"></span>
+  </div>
+  <div class="fb-toolbar">
+    <div class="seg" id="fb-filter" role="radiogroup">
+      <button type="button" role="radio" aria-checked="true" class="active" data-kind="all">{{ _("All") }}<span class="n"></span></button>
+      {% for kind, label, hint in feedback_kinds %}
+      <button type="button" role="radio" aria-checked="false" data-kind="{{ kind }}" class="fb-kind-{{ kind }}"><span class="fb-dot" style="display:inline-block;margin-right:6px"></span>{{ _(label) }}<span class="n"></span></button>
+      {% endfor %}
+    </div>
+    <label class="switch"><input type="checkbox" id="fb-show-done"><span class="track"></span><span>{{ _("Show done") }}</span></label>
+    <span class="grow"></span>
+    <button type="button" class="btn btn-small" id="fb-copy" title="{{ _('The open items as a Markdown list, to paste into an issue or a message') }}">{{ _("Copy as a list") }}</button>
+  </div>
+  <div class="fb-list" id="fb-list"><div class="fb-empty">{{ _("Loading…") }}</div></div>
+</section>
+{% endblock %}

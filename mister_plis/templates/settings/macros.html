@@ -1,0 +1,18 @@
+{#- Pieces every Settings tab uses: a row with a label, a help text and a control; a set of buttons choosing a cookie setting. -#}
+{% macro choice(name, current, options) %}
+<div class="seg" data-pref="{{ name }}" role="radiogroup">
+  {% for value, label in options %}
+  <button type="button" role="radio" data-value="{{ value }}" class="{% if value == current %}active{% endif %}" aria-checked="{{ 'true' if value == current else 'false' }}">{{ _(label) }}</button>
+  {% endfor %}
+</div>
+{% endmacro %}
+
+{% macro setting(label, help) %}
+<div class="setting">
+  <div class="setting-label">{{ _(label) }}</div>
+  {% if help %}<div class="setting-help">{{ _(help) }}</div>{% endif %}
+  {{ caller() }}
+</div>
+{% endmacro %}
+
+{% macro scope(lab) %}<span class="panel-tag{% if lab %} panel-tag-lab{% endif %}">{{ _("whole lab") if lab else _("this browser") }}</span>{% endmacro %}

@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Time Machine") }} · MISTER PLIS{% endblock %}
+{% block page %}timemachine{% endblock %}
+{% block head %}{% if tm_entry %}<script src="/vendor/plotly.min.js" defer></script>{% endif %}{% endblock %}
+{% block crumbs %}
+<a href="/timemachine" class="tm-crumb">{{ icon("galaxy", 15) }}<span>{{ _("Time Machine") }}</span></a>
+{% if tm_entry %}<span class="sep">/</span><span class="here"><code>{{ tm_entry }}</code></span>{% endif %}
+{% endblock %}
+{% block before_shell %}<canvas class="tm-sky" id="tm-sky" aria-hidden="true"></canvas>{% endblock %}
+{% block topbar_end %}<a href="/" class="tm-exit" title="{{ _('Leave Time Machine') }}">{{ icon("chevron-left", 15) }}<span>{{ _("Back to MISTER PLIS") }}</span></a>{% endblock %}
+{% block content %}
+<div class="tm-page{% if tm_entry %} is-entry{% endif %}" id="tm" data-entry="{{ tm_entry or '' }}">
+  <section class="tm-hero">
+    <div class="tm-hero-galaxy">
+      {% with galaxy_id = "-hero", galaxy_size = 150, galaxy_class = "tm-big" %}{% include "partials/galaxy.html" %}{% endwith %}
+    </div>
+    <div class="tm-hero-text">
+      <p class="tm-eyebrow">MISTER PLIS · {{ _("results worth keeping") }}</p>
+      <h1 class="tm-title">{{ _("Time Machine") }}</h1>
+      <p class="lede">{{ _("Jobs come and go in Jobs & results. A result that becomes the basis of a study is copied here — with its files, its settings and who made it — and stays, even after the original is cleaned up.") }}</p>
+      <div class="tm-stats" id="tm-stats"></div>
+    </div>
+  </section>
+
+  {% if tm_missing %}
+  <div class="alert alert-warning">{{ icon("alert", 16) }} <span>{{ _("Job {id} is not in Time Machine. Type its number below to bring it here.", id=tm_missing) }}</span></div>
+  {% endif %}
+
+  {% if tm_entry %}
+  <div id="tm-detail"><div class="muted pad">{{ _("Loading…") }}</div></div>
+  {% else %}
+  <section class="panel tm-retrieve">
+    <div class="tm-retrieve-head">
+      <span class="tm-orb">{{ icon("galaxy", 22) }}</span>
+      <div>
+        <h2>{{ _("Bring a job here") }}</h2>
+        <p class="panel-text">{{ _("Type its job number — it is on every result page and on every printed PDF, next to the small galaxy. The job is looked up in Jobs & results and, if it was cleaned up already, in the backup folder.") }}</p>
+      </div>
+    </div>
+    <form class="tm-retrieve-form" id="tm-retrieve" autocomplete="off">
+      <div class="control tm-id">
+        <input type="text" id="tm-id" spellcheck="false" maxlength="40" required
+               placeholder="{{ _('e.g. 20261019-142301-a1b2c3 or just a1b2c3') }}" aria-label="{{ _('Job number') }}">
+      </div>
+      <div class="control tm-into"><select id="tm-into" aria-label="{{ _('Into project') }}"><option value="">{{ _("No project") }}</option></select></div>
+      <button type="submit" class="btn btn-primary tm-go" id="tm-go">{{ icon("download", 16) }}<span>{{ _("Retrieve") }}</span></button>
+    </form>
+    <div class="tm-retrieve-out" id="tm-retrieve-out" aria-live="polite"></div>
+    <div class="tm-manual-row">
+      <span class="muted">{{ _("Something that never was a job — other files worth keeping?") }}</span>
+      <button type="button" class="btn btn-small tm-manual-btn" id="tm-manual-btn">{{ icon("upload", 14) }}<span>{{ _("Add files by hand…") }}</span></button>
+    </div>
+    <p class="tm-where muted">
+      {{ _("Searched:") }} {{ _("Jobs & results") }}{% if backup_dir %} · {{ _("backup folder") }} <code>{{ backup_dir }}</code>{% else %} · {{ _("no backup folder is set in Settings → Jobs & backup") }}{% endif %}
+    </p>
+  </section>
+
+  <section class="tm-archive">
+    <div class="section-head"><h2 class="section-title">{{ _("Kept results") }}</h2></div>
+    <div class="tm-projects" id="tm-projects" aria-label="{{ _('Projects') }}"></div>
+    <div class="tm-project-head" id="tm-project-head" hidden></div>
+    <div class="tm-bulk" id="tm-bulk" hidden></div>
+    <div class="toolbar tm-toolbar">
+      <label class="job-search">
+        {{ icon("search", 16) }}
+        <input type="search" id="tm-q" autocomplete="off" spellcheck="false"
+               placeholder="{{ _('Search: file name, keyword, project, note, person, job number…') }}" aria-label="{{ _('Search Time Machine') }}">
+      </label>
+      <div class="control"><select id="tm-person" aria-label="{{ _('Who ran it') }}"><option value="">{{ _("Everyone") }}</option></select></div>
+      <div class="control"><select id="tm-tool" aria-label="{{ _('Which tool') }}"><option value="">{{ _("Any tool") }}</option></select></div>
+      <button type="button" class="btn tm-select-all" id="tm-select-all" hidden>{{ icon("check", 15) }}<span>{{ _("Select all") }}</span></button>
+    </div>
+    <div class="tm-layout">
+      <div class="tm-list" id="tm-list"><div class="muted pad">{{ _("Loading…") }}</div></div>
+      <nav class="tm-timeline" id="tm-timeline" aria-label="{{ _('Timeline') }}"></nav>
+    </div>
+  </section>
+
+  <section class="tm-tasks" id="tm-tasks" aria-label="{{ _('Tasks') }}">
+    <div class="section-head tm-tasks-head">
+      <h2 class="section-title">{{ _("Tasks") }}</h2>
+      <button type="button" class="btn btn-small btn-primary" id="tm-task-btn">{{ icon("clock", 14) }}<span>{{ _("New task…") }}</span></button>
+    </div>
+    <p class="muted tm-tasks-lede">{{ _("A place kept for a result that doesn't exist yet: what is to be done, and by whom. When the files are uploaded to it or a job is added to it, the task is done and becomes a kept result.") }}</p>
+    <div class="tm-tasks-grid" id="tm-tasks-grid"><div class="muted pad">{{ _("Loading…") }}</div></div>
+  </section>
+
+  <p class="tm-rules muted">
+    {{ icon("folder", 14) }}
+    <button type="button" class="link-btn tm-history-link" id="tm-history-all">{{ _("See history") }}</button>
+    <span class="tm-rules-sep">·</span>
+    <span>{{ _("Kept on the server in") }} <code>{{ tm_root }}</code> — {{ _("never cleaned up; every change is recorded in a local git history (not sent anywhere). The original job stays in Jobs & results and is backed up as usual; Time Machine's own backup rules come next.") }}</span>
+  </p>
+  {% endif %}
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/outputs.js?v={{ asset_v }}"></script>
+<script src="/m/timemachine/static/timemachine.js?v={{ asset_v }}"></script>
+{% endblock %}

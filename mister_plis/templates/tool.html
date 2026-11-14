@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}{{ _(tool.name) }} · MISTER PLIS{% endblock %}
+{% block page %}tool{% endblock %}
+{% block head %}<script src="/vendor/plotly.min.js" defer></script>{% endblock %}
+{% block crumbs %}<a href="/">{{ _("Tools") }}</a><span class="sep">/</span><span>{{ _(tool.category) }}</span><span class="sep">/</span><span class="here">{{ _(tool.name) }}</span>{% endblock %}
+{% block content %}
+<header class="tool-head">
+  <span class="tile tile-lg tone-{{ tone(tool.category) }}">{{ icon(tool.icon, 28) }}</span>
+  <div>
+    <p class="eyebrow">{{ _(tool.category) }}{% if tool.live %} · {{ _("updates as you type") }}{% endif %}</p>
+    <h1>{{ _(tool.name) }}</h1>
+    {% if tool.description %}<p class="lede">{{ _(tool.description) }}</p>{% endif %}
+  </div>
+</header>
+
+{% set reason = unavailable(tool) %}
+{% if reason %}<div class="alert alert-warning">{{ icon("alert", 16) }} <span>{{ _(reason) }}</span></div>{% endif %}
+
+<div class="tool-layout {% if tool.live %}is-live{% endif %} {% if tool.wide %}is-wide{% endif %}">
+  <form class="panel form-panel" id="tool-form" autocomplete="off" novalidate>
+    <div id="fields"></div>
+    {% if not tool.live %}
+    <div class="form-actions">
+      <div class="file-keyword job-title-field">
+        <label class="field-label" for="f-title"><span>{{ _("Title") }}</span><span class="opt">{{ _("optional") }}</span></label>
+        <div class="control"><input id="f-title" type="text" maxlength="120" placeholder="{{ _('e.g. WT vs mutant, day 3 — shown after the tool name') }}"></div>
+      </div>
+      <div class="file-keyword">
+        <label class="field-label" for="f-keyword"><span>{{ _("File name keyword") }}</span><span class="opt">{{ _("optional") }}</span></label>
+        <div class="control"><input id="f-keyword" type="text" maxlength="60" placeholder="{{ _('e.g. WT vs mutant, light series 2') }}"></div>
+        <div class="field-help" id="keyword-preview"></div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block" id="run-btn" {% if reason %}disabled{% endif %}>
+        {{ icon("play", 16) }}<span>{{ _(tool.submit_label) }}</span>
+      </button>
+    </div>
+    {% endif %}
+  </form>
+
+  <section class="results" id="results" aria-live="polite">
+    <div class="empty-state" id="empty-state">
+      <div class="empty-egg" aria-hidden="true"></div>
+      <p>{% if tool.live %}{{ _("Fill in the values — results appear here instantly.") }}{% else %}{{ _("Set the inputs and press") }} <strong>{{ _(tool.submit_label) }}</strong>. {{ _("Results show up here.") }}{% endif %}</p>
+    </div>
+  </section>
+</div>
+
+{% if tool.history %}
+<section class="recent" id="tool-history" hidden>
+  <div class="section-head"><h2 class="section-title">{{ _("Previous runs") }}</h2><a class="link" href="/jobs?tool={{ tool.id }}">{{ _("All") }} →</a></div>
+  <div class="job-list" id="history-list"></div>
+</section>
+{% endif %}
+<script type="application/json" id="tool-spec">{{ spec_json|safe }}</script>
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/outputs.js?v={{ asset_v }}"></script>
+<script src="/static/js/widgets.js?v={{ asset_v }}"></script>
+<script src="/static/js/jobs.js?v={{ asset_v }}"></script>
+<script src="/static/js/protocol.js?v={{ asset_v }}"></script>
+<script src="/static/js/label.js?v={{ asset_v }}"></script>
+<script src="/static/js/tool.js?v={{ asset_v }}"></script>
+{% endblock %}

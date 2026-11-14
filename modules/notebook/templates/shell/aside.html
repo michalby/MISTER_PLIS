@@ -1,0 +1,21 @@
+  <aside class="notes-panel" id="notes-panel" aria-label="{{ _('Lab notebook') }}">
+    <div class="notes-resize" id="notes-resize" role="separator" aria-orientation="vertical" aria-label="{{ _('Resize the notes') }}" tabindex="0"></div>
+    <div class="notes-head">
+      <span class="notes-head-icon">{{ icon("book", 18) }}</span>
+      <div class="notes-head-text">
+        <div class="notes-head-title">{{ _("Lab notebook") }}</div>
+        <div class="notes-head-sub" id="notes-sub">{{ _("read-only") }}</div>
+      </div>
+      <a class="icon-btn" id="notes-full" href="/notes" title="{{ _('Open as a full page') }}" aria-label="{{ _('Open as a full page') }}">{{ icon("expand", 16) }}</a>
+      <button type="button" class="icon-btn" id="notes-close" title="{{ _('Hide the notes (N)') }}" aria-label="{{ _('Hide the notes') }}">{{ icon("chevron-right", 16) }}</button>
+    </div>
+    <label class="notes-search">
+      {{ icon("search", 15) }}
+      <input type="search" id="notes-q" placeholder="{{ _('Search notes') }}" autocomplete="off" aria-label="{{ _('Search notes') }}">
+    </label>
+    <div class="notes-body" id="notes-body"></div>
+  </aside>
+  <button type="button" class="notes-rail" id="notes-rail" title="{{ _('Show the lab notebook (N)') }}" aria-label="{{ _('Show the lab notebook') }}">
+    {{ icon("chevron-left", 16) }}<span>{{ _("Notes") }}</span>
+  </button>
+  <div class="notes-scrim" id="notes-scrim"></div>

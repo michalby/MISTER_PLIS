@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Jobs & results") }} · MISTER PLIS{% endblock %}
+{% block page %}jobs{% endblock %}
+{% block crumbs %}<span class="here">{{ _("Jobs & results") }}</span>{% endblock %}
+{% block content %}
+<header class="page-head">
+  <h1>{{ _("Jobs & results") }}</h1>
+  <p class="lede">{{ _("Everything anyone in the lab has run — open any job to see and download its results. Files are named with the date, the name of whoever ran it and their keyword. Results are kept for a while, then cleaned up automatically (and copied to the backup folder, if one is set in Settings → Jobs & backup).") }}
+    {% for p in module_panels("jobs_lede") %}{% include p %}{% endfor %}</p>
+</header>
+<div class="toolbar job-toolbar">
+  <label class="job-search">
+    {{ icon("search", 16) }}
+    <input type="search" id="job-q" autocomplete="off" spellcheck="false"
+           placeholder="{{ _('Search: file name, keyword, tool, person, job number…') }}" aria-label="{{ _('Search jobs') }}">
+  </label>
+  <button type="button" class="btn btn-small filters-btn" id="job-filters-btn" aria-expanded="false" aria-controls="job-filters">
+    {{ icon("settings", 15) }}<span>{{ _("Filters") }}</span><span class="filters-n" id="job-filters-n" hidden></span>
+  </button>
+  <button type="button" class="btn btn-small" id="job-import-btn" aria-expanded="false" aria-controls="job-import">
+    {{ icon("download", 15) }}<span>{{ _("Import from backup") }}</span>
+  </button>
+  <div class="seg" id="job-filter">
+    <button class="active" data-filter="all">{{ _("All") }}</button>
+    <button data-filter="active">{{ _("Running") }}</button>
+    <button data-filter="done">{{ _("Done") }}</button>
+    <button data-filter="failed">{{ _("Failed") }}</button>
+  </div>
+</div>
+<div class="filter-panel panel" id="job-filters" hidden>
+  <div class="filter-field">
+    <span class="field-label">{{ _("Who") }}</span>
+    <div class="control"><select id="job-person" aria-label="{{ _('Whose jobs') }}"><option value="">{{ _("Everyone") }}</option></select></div>
+  </div>
+  <div class="filter-field">
+    <span class="field-label">{{ _("What") }}</span>
+    <div class="control"><select id="job-tool" aria-label="{{ _('Which tool') }}"><option value="">{{ _("Any tool") }}</option></select></div>
+  </div>
+  <div class="filter-field filter-when">
+    <span class="field-label">{{ _("When") }}</span>
+    <div class="seg seg-small" id="job-when">
+      <button type="button" class="active" data-days="">{{ _("Any time") }}</button>
+      <button type="button" data-days="1">{{ _("Today") }}</button>
+      <button type="button" data-days="7">{{ _("7 days") }}</button>
+      <button type="button" data-days="30">{{ _("30 days") }}</button>
+    </div>
+    <div class="date-range">
+      <div class="control"><input type="date" id="job-from" aria-label="{{ _('From') }}"></div>
+      <span class="muted">–</span>
+      <div class="control"><input type="date" id="job-to" aria-label="{{ _('To') }}"></div>
+    </div>
+  </div>
+  {% for p in module_panels("jobs_filters") %}{% include p %}{% endfor %}
+  <div class="filter-foot"><button type="button" class="link-btn" id="job-filters-clear">{{ _("Clear filters") }}</button></div>
+</div>
+<section class="panel import-panel" id="job-import" hidden>
+  <div class="panel-head"><h2>{{ icon("download", 18) }} {{ _("Import from backup") }}</h2></div>
+  <p class="panel-text">{{ _("Jobs in the backup folder — also those already cleaned up from here. Tick the ones to bring back: they come back into Jobs & results with their files, settings and results, as they were.") }}</p>
+  <div class="import-bar">
+    <label class="job-search">{{ icon("search", 16) }}<input type="search" id="imp-q" autocomplete="off" spellcheck="false" placeholder="{{ _('Job number, tool, person, title, keyword…') }}" aria-label="{{ _('Search the backup folder') }}"></label>
+    <button type="button" class="btn btn-small" id="imp-rescan">{{ icon("sync", 15) }}<span>{{ _("Look through the folder again") }}</span></button>
+  </div>
+  <div class="imp-list" id="imp-list"></div>
+  <div class="import-foot"><span class="muted" id="imp-sum"></span><button type="button" class="btn btn-primary" id="imp-go" disabled>{{ _("Bring back") }}</button></div>
+</section>
+<div class="toolbar-note job-count" id="job-count"></div>
+<div class="job-list job-list-full" id="jobs-list"><div class="muted pad">{{ _("Loading…") }}</div></div>
+{% endblock %}
+{% block scripts %}<script src="/static/js/jobs.js?v={{ asset_v }}"></script>{% endblock %}

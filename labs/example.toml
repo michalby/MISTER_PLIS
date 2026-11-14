@@ -1,0 +1,56 @@
+# An example lab file: a made-up lab ("Smith Lab") set up the way most labs will be. Copy it, change what is yours, and
+# keep your copy with your lab's own files (your private tools repository, say) — or start from labs/template.toml,
+# which names every setting.
+#
+# How to use a lab file (docs/LAB_SETUP_PLAN.md; the format is in docs/FORMATS.md §12):
+#   python -m mister_plis setup <file> --check    show what it would change, change nothing
+#   python -m mister_plis setup <file>            apply it (asks first)
+#   or pick or upload it on the setup page (/setup) the first time the server opens
+#
+# NEVER put a token or password in a lab file. A private repository's token is pasted on the server (Settings → Tools
+# when the source is added, or Settings → Server & updates → GitHub access) and stays there.
+
+[lab_file]
+format = 1
+
+[lab]
+name = "Smith Lab"
+language = "en"             # the interface's default language for a new browser ("en" | "pl"); each person can switch
+
+# The lab's own tools: a repository of its own (private is fine: paste its token on the server). Trusted, so it is
+# updated without a review. The basic tools that come with MISTER PLIS need no line here.
+[[tool_sources]]
+name = "lab"
+url = "https://github.com/smith-lab/lab-tools.git"
+branch = "main"
+trusted = true
+
+[modules]
+on = ["timemachine", "inventory", "notebook"]    # "all", or [] for none
+
+# Reagents & consumables: the lab's own copy of the empty inventory repository (GitHub: "Use this template").
+[module.inventory]
+repo = "https://github.com/smith-lab/inventory.git"   # "" = no sync (work on this server only)
+branch = "main"
+push = true                 # send each change to GitHub about 20 s after it is made
+auto_sync_minutes = 15      # fetch others' changes every so often (0 = only by hand)
+calculator = "molarity"     # the tool a reagent's "Make a solution" button opens ("" = no button)
+
+# The lab notebook: the lab's own copy of the empty notebook repository (an Obsidian vault), read-only here.
+[module.notebook]
+repo = "https://github.com/smith-lab/notebook.git"   # "" = the notebook is off
+branch = "main"
+folders = ["Protocols", "Reagents"]
+auto_sync_minutes = 15      # 0, 15, 60 or 240
+
+[jobs]
+keep_days = 30              # results are deleted after this (unless still waiting for their backup)
+keep_uploads_days = 3
+
+[backup]
+# folder = "/Volumes/LabNAS/MISTER PLIS backup"   # this computer's path to the backup disk; "" = no backups
+after_days = 1              # 0 (as soon as a job is done), 1, 3 or 7
+
+[label_printer]
+# address = ""              # the Brother P-touch's IP address or host name, optionally :port
+tape_mm = 12                # 9, 12, 18 or 24

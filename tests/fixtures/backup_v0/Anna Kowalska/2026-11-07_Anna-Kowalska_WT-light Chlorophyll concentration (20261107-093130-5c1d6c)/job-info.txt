@@ -1,0 +1,21 @@
+Tool:      Chlorophyll concentration
+Title:     WT vs mutant, day 3
+Run by:    Anna Kowalska
+Started:   2026-11-07 09:31
+Finished:  2026-11-07 09:31
+Job:       20261107-093130-5c1d6c
+Keyword:   WT light
+
+Input files:
+  Measurements: run1.csv
+
+Settings:
+  Próbki: 4 wiersze
+  Aceton (80 %): 1400 µL
+  Próbka: 5 µL
+  Korekta linii bazowej: Odejmij A750
+  Ilość chlorofilu na próbkę: 10 µg a+b
+  Wyrównaj stężenie próbek do: wybranego stężenia
+  Stężenie przed denaturacją: 0.2 µg/µL
+  Bufor denaturujący: 1 × objętość próbki
+  Zaokrąglanie objętości: 1 miejsc po przecinku

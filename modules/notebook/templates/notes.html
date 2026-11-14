@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}{{ note.title ~ " · " if note else "" }}{{ _("Lab notebook") }} · MISTER PLIS{% endblock %}
+{% block page %}notes{% endblock %}
+{% block crumbs %}<a href="/notes">{{ _("Lab notebook") }}</a>{% if note %}<span class="sep">/</span><span>{{ note.folder|replace("/", " / ") }}</span><span class="sep">/</span><span class="here">{{ note.title }}</span>{% endif %}{% endblock %}
+{% block content %}
+<div class="notes-page">
+  <nav class="panel notes-index" aria-label="{{ _('Notes') }}">
+    <label class="notes-search">
+      {{ icon("search", 15) }}
+      <input type="search" id="notes-page-q" placeholder="{{ _('Search notes') }}" autocomplete="off" aria-label="{{ _('Search notes') }}">
+    </label>
+    <div class="notes-list" id="notes-page-list">
+      {% for g in tree %}
+      <details class="notes-group" open data-folder="{{ g.folder }}">
+        <summary class="notes-folder">{{ icon("folder", 14) }}<span>{{ g.folder|replace("/", " / ") }}</span><span class="n">{{ g.notes|length }}</span></summary>
+        {% for n in g.notes %}
+        <a class="notes-item {% if note and note.id == n.id %}active{% endif %}" href="/notes/{{ n.id|urlencode }}">{{ icon("file", 14) }}<span>{{ n.title }}</span></a>
+        {% endfor %}
+      </details>
+      {% else %}
+      <p class="notes-empty">{% if synced %}{{ _("No notes in the chosen folders.") }}{% else %}{{ _("The notebook hasn't been downloaded yet. Go to") }} <a href="/settings#notebook">{{ _("Settings") }} → {{ _("Lab notebook") }}</a> → <b>{{ _("Sync notes") }}</b>.{% endif %}</p>
+      {% endfor %}
+    </div>
+  </nav>
+
+  <article class="panel notes-article">
+    {% if note %}
+    <p class="eyebrow">{{ note.folder|replace("/", " / ") }}</p>
+    <h1 class="note-title">{{ note.title }}</h1>
+    <div class="prose note-body">{{ note.html|safe }}</div>
+    {% if note.backlinks %}
+    <div class="note-backlinks">
+      <div class="note-backlinks-head">{{ _("Linked from") }}</div>
+      {% for b in note.backlinks %}<a class="wikilink" href="/notes/{{ b.id|urlencode }}">{{ b.title }}</a>{% endfor %}
+    </div>
+    {% endif %}
+    <p class="note-foot">{{ _("Read-only copy of the lab's Obsidian notebook. To change it, edit the note in Obsidian, then Sync notes on Settings → Lab notebook.") }}</p>
+    {% else %}
+    <div class="empty-state notes-welcome">
+      <div class="empty-egg" aria-hidden="true"></div>
+      <p>{{ _("Pick a note on the left, or search. The same notes are in the Notes panel next to every tool.") }}</p>
+    </div>
+    {% endif %}
+  </article>
+</div>
+{% endblock %}

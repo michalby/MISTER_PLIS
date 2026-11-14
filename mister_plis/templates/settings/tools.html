@@ -1,0 +1,52 @@
+{% from "settings/macros.html" import scope %}
+<p class="lede tab-lede">{{ _("Where the tools come from, and what each tool needs set up on this server. These apply to the whole lab.") }}</p>
+
+<section class="panel" id="tool-sources">
+  <div class="panel-head"><h2>{{ icon("branch", 18) }} {{ _("Tool sources") }} {{ scope(true) }}</h2></div>
+  <p class="panel-text">{{ _("The git repositories the tools come from: the lab's own, and any others added here. Each can follow a branch, be checked for updates and updated, or be pinned to a commit. Tools run inside the server with access to everything, so a repository that isn't the lab's own is added switched off and pinned; read what it contains before switching it on.") }}</p>
+  <div class="ts-list" id="ts-list"><div class="muted pad">{{ _("Loading…") }}</div></div>
+  <div class="branch-pick">
+    <div class="branch-pick-head"><span class="field-label">{{ _("Add a tool source") }}</span></div>
+    <div class="branch-pick-row">
+      <div class="control"><input type="text" id="ts-url" placeholder="https://github.com/someone/their-tools.git" aria-label="{{ _('Repository address') }}"></div>
+      <div class="control ts-name"><input type="text" id="ts-name" placeholder="{{ _('short name') }}" aria-label="{{ _('Short name') }}"></div>
+      <button type="button" class="btn" id="ts-add">{{ _("Add") }}</button>
+    </div>
+    <div class="branch-pick-row ts-token">
+      <div class="control"><input type="password" id="ts-token" autocomplete="off" spellcheck="false" placeholder="{{ _('token — only for a private repository') }}" aria-label="{{ _('Token') }}"></div>
+    </div>
+    <p class="setting-help">{{ _("A private repository needs a token that can read it (on GitHub: a fine-grained token with read access to its contents). It is kept on this server for that one repository only, listed on Settings → Server & updates → GitHub access.") }}</p>
+  </div>
+  <div class="sync-log" id="ts-log" hidden></div>
+</section>
+
+<section class="panel" id="tool-catalogue">
+  <div class="panel-head"><h2>{{ icon("search", 18) }} {{ _("Browse a catalogue") }} {{ scope(true) }}</h2></div>
+  <p class="panel-text">{{ _("Tool sources other labs have published. Adding one fetches it switched off and pinned, as any source that isn't the lab's own: read what it contains before switching it on.") }}</p>
+  <div class="branch-pick">
+    <div class="branch-pick-row">
+      <div class="control"><input type="text" id="cat-address" placeholder="https://…/catalogue.json" spellcheck="false" aria-label="{{ _("Catalogue's address") }}"></div>
+      <button type="button" class="btn" id="cat-save">{{ _("Save") }}</button>
+    </div>
+  </div>
+  <div class="ts-list" id="cat-list"></div>
+</section>
+
+<section class="panel" id="tool-settings">
+  <div class="panel-head"><h2>{{ icon("settings", 18) }} {{ _("Settings of the tools") }} {{ scope(true) }}</h2></div>
+  <p class="panel-text">{{ _("What a tool needs set up on this server — where a program is installed, say. Only tools that need something are listed.") }}</p>
+  <div class="tset-list" id="tset-list"><div class="muted pad">{{ _("Loading…") }}</div></div>
+</section>
+
+{% if broken %}
+<section class="panel" id="broken-tools">
+  <div class="panel-head"><h2>{{ icon("alert", 18) }} {{ _("Tools that didn't load") }}</h2><span class="badge warn">{{ broken|length }}</span></div>
+  <p class="panel-text">{{ _("These failed when the server started; the other tools work. The error says what went wrong — usually a fix in the tool's repository, then Check and Update above, and a restart.") }}</p>
+  <div class="broken-list">
+    {% for b in broken %}
+    <details class="broken-item"><summary><code>{{ b.module }}</code> — {{ b.error.strip().splitlines()[-1] if b.error.strip() else "" }}</summary><pre>{{ b.error }}</pre></details>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+{% for p in module_panels("settings:tools") %}{% include p %}{% endfor %}

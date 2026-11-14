@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% set cons = space.kind == "consumables" %}
+{% set base = space.base %}
+{% block title %}{{ _("Consumables") if cons else _("Reagents") }} · MISTER PLIS{% endblock %}
+{% block page %}reagents{% endblock %}
+{% block crumbs %}
+<a href="{{ base }}" class="rg-crumb">{{ icon(space.icon, 15) }}<span>{{ _("Consumables") if cons else _("Reagents") }}</span></a>
+{% if reagents_view == "order" %}<span class="sep">/</span><span class="here">{{ _("To order") }}</span>
+{% elif reagents_view == "info" %}<span class="sep">/</span><span class="here">{{ _("Info from the lab") }}</span>
+{% elif reagents_view in ("item", "edit") %}<span class="sep">/</span><span class="here" id="rg-crumb-name">{{ (_("New consumable") if cons else _("New reagent")) if not reagent_id else "…" }}</span>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="rg{% if cons %} rg-cons{% endif %}" id="rg" data-view="{{ reagents_view }}" data-id="{{ reagent_id }}" data-kind="{{ space.kind }}" data-base="{{ base }}" data-api="{{ space.api }}">
+  <header class="rg-head">
+    <div class="rg-head-mark" aria-hidden="true">
+      {% if cons %}
+      <svg viewBox="0 0 48 48" width="46" height="46"><defs><linearGradient id="rg-tips" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5eead4"/><stop offset="1" stop-color="#60a5fa"/></linearGradient></defs>
+        <path d="M6 20h36v18a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
+        <path d="M4 14h40v6H4z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
+        <g class="rg-mark-tips" fill="url(#rg-tips)"><path d="M12 5h4l-1 9h-2z"/><path d="M22 5h4l-1 9h-2z"/><path d="M32 5h4l-1 9h-2z"/></g>
+        <path d="M18 29h12" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+      {% else %}
+      <svg viewBox="0 0 48 48" width="46" height="46"><defs><linearGradient id="rg-liquid" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5eead4"/><stop offset="1" stop-color="#60a5fa"/></linearGradient></defs>
+        <path d="M18 5h12M20 5v13L9 37a4 4 0 0 0 3.5 6h23a4 4 0 0 0 3.5-6L28 18V5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
+        <path class="rg-mark-liquid" d="M14 30h20l5 8a3 3 0 0 1-2.6 4.5H11.6A3 3 0 0 1 9 38z" fill="url(#rg-liquid)"/>
+        <circle class="rg-mark-b1" cx="21" cy="35" r="1.6" fill="#fff"/><circle class="rg-mark-b2" cx="27" cy="37" r="1.1" fill="#fff"/></svg>
+      {% endif %}
+    </div>
+    <div>
+      <p class="rg-eyebrow">MISTER PLIS · {{ _("consumables inventory") if cons else _("reagent inventory") }}</p>
+      <h1 class="rg-title">{{ _("Consumables") if cons else _("Reagents") }}</h1>
+      {% if spaces_both %}
+      <nav class="rg-spaces" aria-label="{{ _('Inventories') }}">
+        <a href="/reagents{{ '/' ~ reagents_view if reagents_view in ('order', 'info') else '' }}" class="{% if not cons %}active{% endif %}"{% if not cons %} aria-current="page"{% endif %}>{{ icon("flask", 14) }}<span>{{ _("Reagents") }}</span></a>
+        <a href="/consumables{{ '/' ~ reagents_view if reagents_view in ('order', 'info') else '' }}" class="{% if cons %}active{% endif %}"{% if cons %} aria-current="page"{% endif %}>{{ icon("box", 14) }}<span>{{ _("Consumables") }}</span></a>
+      </nav>
+      {% endif %}
+    </div>
+    <nav class="tabs rg-tabs" aria-label="{{ _('Consumables') if cons else _('Reagents') }}">
+      <a href="{{ base }}" class="tab {% if reagents_view in ('list', 'item', 'edit') %}active{% endif %}"{% if reagents_view in ('list', 'item', 'edit') %} aria-current="page"{% endif %}>{{ icon("table", 15) }}<span>{{ _("Inventory") }}</span></a>
+      <a href="{{ base }}/order" class="tab {% if reagents_view == 'order' %}active{% endif %}"{% if reagents_view == 'order' %} aria-current="page"{% endif %}>{{ icon("cart", 15) }}<span>{{ _("To order") }}</span><span class="tab-n" id="rg-n-order" hidden></span></a>
+      <a href="{{ base }}/info" class="tab {% if reagents_view == 'info' %}active{% endif %}"{% if reagents_view == 'info' %} aria-current="page"{% endif %}>{{ icon("info", 15) }}<span>{{ _("Info from the lab") }}</span><span class="tab-n" id="rg-n-info" hidden></span></a>
+    </nav>
+    <button type="button" class="btn btn-small rg-info-btn" id="rg-info-btn" aria-haspopup="dialog" aria-expanded="false" aria-controls="rg-info-pop"
+            title="{{ _('Tell us what changed: something moved, running low, or paste a transcript of a walk round the lab') }}">
+      {{ icon("info", 15) }}<span id="rg-info-btn-text">{{ _("Add info") }}</span>
+    </button>
+  </header>
+
+  {% if reagents_view == "list" %}
+  <section class="rg-list-view">
+    <div class="toolbar rg-toolbar">
+      <label class="job-search rg-search">
+        {{ icon("search", 16) }}
+        {% if cons %}
+        <input type="search" id="rg-q" autocomplete="off" spellcheck="false"
+               placeholder="{{ _('Search every field: name, kind, size, product code, place, brand…') }}" aria-label="{{ _('Search consumables') }}">
+        {% else %}
+        <input type="search" id="rg-q" autocomplete="off" spellcheck="false"
+               placeholder="{{ _('Search every field: name, CAS, label number, place, producer…') }}" aria-label="{{ _('Search reagents') }}">
+        {% endif %}
+        <kbd>/</kbd>
+      </label>
+      <button type="button" class="btn btn-small" id="rg-cols-btn" aria-haspopup="dialog">{{ icon("table", 15) }}<span>{{ _("Columns") }}</span></button>
+      <button type="button" class="btn btn-small filters-btn" id="rg-filters-btn" aria-expanded="false" aria-controls="rg-filters">
+        {{ icon("settings", 15) }}<span>{{ _("All filters") }}</span><span class="filters-n" id="rg-filters-n" hidden></span>
+      </button>
+      <a class="btn btn-small btn-primary" href="{{ base }}/new">{{ icon("plus", 15) }}<span>{{ _("Add a consumable") if cons else _("Add a reagent") }}</span></a>
+    </div>
+    <div class="rg-quick" id="rg-quick" aria-label="{{ _('Quick filters') }}"></div>
+    <div class="filter-panel panel rg-filters" id="rg-filters" hidden></div>
+    <div class="rg-summary" id="rg-summary"></div>
+    <div class="panel rg-table-panel"><div class="rg-table-wrap" id="rg-list"><div class="muted pad">{{ _("Loading…") }}</div></div></div>
+  </section>
+
+  {% elif reagents_view == "order" %}
+  <section id="rg-order"><div class="muted pad">{{ _("Loading…") }}</div></section>
+
+  {% elif reagents_view == "info" %}
+  <section id="rg-infos"><div class="muted pad">{{ _("Loading…") }}</div></section>
+
+  {% else %}
+  <section id="rg-one"><div class="muted pad">{{ _("Loading…") }}</div></section>
+  {% endif %}
+</div>
+
+<button type="button" class="rg-top" id="rg-top" title="{{ _('Back to the top') }}" aria-label="{{ _('Back to the top') }}" hidden>{{ icon("chevron-up", 20) }}</button>
+
+<!-- Info from the lab: a bubble under the "Add info" button (only on the Reagents and Consumables pages) -->
+<div class="fb-pop rg-info-pop" id="rg-info-pop" role="dialog" aria-modal="false" aria-labelledby="rg-info-title" hidden>
+  <div class="fb-glow" aria-hidden="true"></div>
+  <div class="fb-ring" aria-hidden="true"></div>
+  <form class="fb-card" id="rg-info-form" novalidate>
+    <div class="fb-head">
+      <h2 id="rg-info-title">{{ _("Info about the consumables") if cons else _("Info about the reagents") }}</h2>
+      <button type="button" class="icon-btn icon-btn-sm" id="rg-info-close" aria-label="{{ _('Close') }}">{{ icon("x", 16) }}</button>
+    </div>
+    {% if cons %}
+    <p class="rg-info-hint" id="rg-info-hint">{{ _("Instead of editing: “last box of 200 µl tips”, “the cheap PVDF membranes tear — buy Millipore next time”, or paste a transcript of a walk round the lab. Reagents and consumables in one message are fine — it is one list.") }}</p>
+    {% else %}
+    <p class="rg-info-hint" id="rg-info-hint">{{ _("Instead of editing: “the Sigma acetone moved to cabinet 3”, “only two bottles left — order more”, or paste a transcript of a walk round the lab. The records are corrected from it later.") }}</p>
+    {% endif %}
+    <textarea id="rg-info-text" rows="7" maxlength="60000" required placeholder="{{ _('What changed? Long texts and transcripts are fine.') }}"></textarea>
+    <div class="fb-foot">
+      <span class="fb-who" id="rg-info-who"></span>
+      <button type="submit" class="btn btn-primary btn-small" id="rg-info-send">{{ _("Send") }}</button>
+    </div>
+    <div class="fb-thanks" aria-live="polite">
+      <span class="fb-thanks-icon">{{ icon("check", 22) }}</span>
+      <b>{{ _("Thank you!") }}</b>
+      <span>{{ _("It's on the list in Info from the lab.") }}</span>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}<script src="/m/inventory/static/reagents.js?v={{ asset_v }}"></script>{% endblock %}

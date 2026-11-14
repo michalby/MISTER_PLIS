@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Lab setup") }} · MISTER PLIS{% endblock %}
+{% block page %}setup{% endblock %}
+{% block crumbs %}<a href="/settings#server">{{ _c("page", "Settings") }}</a><span class="sep">/</span><span class="here">{{ _("Lab setup") }}</span>{% endblock %}
+{% block content %}
+{% set is_new = setup_state.status == "new" %}
+<header class="page-head">
+  <h1>{{ _("Set up MISTER PLIS for your lab") if is_new else _("Lab setup") }}</h1>
+  <p class="lede">{% if is_new %}{{ _("This server isn't set up yet. Start from your lab's file (it says which repositories hold your tools and your lab's other data) or fill in what you need below. Check shows what would change; nothing is changed until you press Set up. Everything here can be changed again later, here or on Settings.") }}{% else %}{{ _("Set this server up again, from a lab file or by hand. Check shows each setting as it is now and as it would be; nothing is changed until you press Set up. What a lab file leaves out stays as it is.") }}{% endif %}</p>
+  {% if person.role != "admin" %}<div class="alert alert-warning">{{ icon("alert", 16) }}<span>{{ _("Only someone who may change the lab's settings can change what is here.") }}</span></div>{% endif %}
+</header>
+
+<section class="panel" id="setup-code" hidden>
+  <div class="panel-head"><h2>{{ icon("info", 18) }} {{ _("This server's setup code") }}</h2></div>
+  <p class="panel-text">{{ _("So that a new server belongs to the lab that set it up, setting it up from another computer needs its setup code. The server shows it when it starts (in its window or log), and on the server this shows it again: python -m mister_plis setup-code. On the server's own computer (http://localhost:…) no code is needed.") }}</p>
+  <div class="setup-from">
+    <div class="setup-from-row">
+      <span class="field-label">{{ _("Setup code") }}</span>
+      <div class="setup-inline">
+        <div class="control"><input type="text" id="setup-code-input" spellcheck="false" autocomplete="off" placeholder="ABCD-EFGH" aria-label="{{ _("This server's setup code") }}"></div>
+        <button type="button" class="btn btn-primary" id="setup-code-go">{{ _("Continue") }}</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="setup" id="setup">
+  <section class="panel setup-step" id="setup-from">
+    <div class="panel-head"><h2><span class="setup-n">1</span> {{ _("Start from") }}</h2><span class="muted" id="setup-source"></span></div>
+    <p class="panel-text">{{ _("A lab file holds a lab's settings (labs/*.toml; never a password or token). Loading one fills in the steps below; you can still change each of them.") }}</p>
+    <div class="setup-from">
+      <div class="setup-from-row">
+        <span class="field-label">{{ _("A lab file that comes with MISTER PLIS") }}</span>
+        <div class="setup-inline"><div class="control"><select id="setup-files" aria-label="{{ _('A lab file that comes with MISTER PLIS') }}"></select></div>
+          <button type="button" class="btn" id="setup-load-file">{{ _("Load") }}</button></div>
+      </div>
+      <div class="setup-from-row">
+        <span class="field-label">{{ _("A lab file from this computer") }}</span>
+        <div class="setup-inline"><input type="file" id="setup-upload" accept=".toml,text/plain" aria-label="{{ _('A lab file from this computer') }}"></div>
+      </div>
+      <div class="setup-from-row">
+        <span class="field-label">{{ _("A lab file on the web (https://…)") }}</span>
+        <div class="setup-inline"><div class="control"><input type="url" id="setup-url" placeholder="https://github.com/your-lab/lab-settings/blob/main/lab.toml" aria-label="{{ _('A lab file on the web (https://…)') }}"></div>
+          <button type="button" class="btn" id="setup-load-url">{{ _("Load") }}</button></div>
+      </div>
+      <div class="setup-from-row">
+        <span class="field-label">{{ _("Everything from another server") }}</span>
+        <div class="setup-inline"><div class="control"><input type="text" id="setup-transfer" spellcheck="false" placeholder="/Volumes/USB/MISTER PLIS Smith Lab 2026-11-11 1430" aria-label="{{ _('Everything from another server') }}"></div>
+          <button type="button" class="btn" id="setup-transfer-check">{{ _("Check") }}</button></div>
+      </div>
+      <div id="setup-transfer-result"></div>
+      <div class="setup-from-row">
+        <span class="field-label">{{ _("This server's settings as they are now") }}</span>
+        <div class="setup-inline"><button type="button" class="btn" id="setup-load-current">{{ _("Start over from them") }}</button></div>
+      </div>
+    </div>
+    <div id="setup-warnings"></div>
+  </section>
+
+  <form id="setup-form" autocomplete="off">
+    <section class="panel setup-step">
+      <div class="panel-head"><h2><span class="setup-n">2</span> {{ _("The lab") }}</h2></div>
+      <div class="setup-grid">
+        <label class="setup-field"><span class="field-label">{{ _("The lab's name") }}</span>
+          <div class="control"><input type="text" name="lab.name" maxlength="60" placeholder="{{ _('e.g. Smith Lab') }}"></div>
+          <span class="setting-help">{{ _("Shown at the top of the sidebar, on PDF reports and in backups.") }}</span></label>
+        <label class="setup-field"><span class="field-label">{{ _("Language for new browsers") }}</span>
+          <div class="control"><select name="lab.language"><option value="">English</option><option value="pl">Polski</option></select></div>
+          <span class="setting-help">{{ _("Each person can still switch with PL / EN at the top.") }}</span></label>
+      </div>
+    </section>
+
+    <section class="panel setup-step">
+      <div class="panel-head"><h2><span class="setup-n">3</span> {{ _("Tools") }}</h2></div>
+      <p class="panel-text">{{ _("Tool sources: git repositories with tools. The lab's own (trusted) gets the server's GitHub token; one that isn't trusted is fetched without it, pinned and left off until someone reviews it on Settings → Tools. A source can't be removed here — that is on Settings → Tools.") }}</p>
+      <div class="setup-sources" id="setup-sources"></div>
+      <div class="sync-actions"><button type="button" class="btn btn-small" id="setup-add-source">{{ icon("plus", 14) }}<span>{{ _("Add a tool source") }}</span></button></div>
+    </section>
+
+    <section class="panel setup-step">
+      <div class="panel-head"><h2><span class="setup-n">4</span> {{ _("Modules") }}</h2></div>
+      <p class="panel-text">{{ _("Larger parts of MISTER PLIS. One that is turned on or off here changes at the next restart; its own settings can then be changed on its Settings tab too.") }}</p>
+      <div id="setup-modules"></div>
+    </section>
+
+    <section class="panel setup-step">
+      <div class="panel-head"><h2><span class="setup-n">5</span> {{ _("This computer") }}</h2></div>
+      <div class="setup-grid">
+        <label class="setup-field"><span class="field-label">{{ _("Storage folder") }}</span>
+          <div class="control"><input type="text" name="jobs.storage_folder" placeholder="/Volumes/Lab data/MISTER PLIS" spellcheck="false"></div>
+          <span class="setting-help">{{ _("Where jobs and what tools save are kept. Empty: the server's data folder. Only set here while there are no jobs; later it is moved on Settings → Jobs & backup.") }}</span></label>
+        <label class="setup-field"><span class="field-label">{{ _("Backup folder") }}</span>
+          <div class="control"><input type="text" name="backup.folder" placeholder="/Volumes/LabNAS/MISTER PLIS backup" spellcheck="false"></div>
+          <span class="setting-help">{{ _("A disk or a NAS where finished jobs are copied. Empty: no backups.") }}</span></label>
+        <label class="setup-field"><span class="field-label">{{ _("Back up") }}</span>
+          <div class="control"><select name="backup.after_days" data-type="int">
+            <option value="0">{{ _("as soon as a job is done") }}</option><option value="1">{{ _("after a day") }}</option>
+            <option value="3">{{ _("after 3 days") }}</option><option value="7">{{ _("after a week") }}</option></select></div></label>
+        <label class="setup-field"><span class="field-label">{{ _("Keep results for (days)") }}</span>
+          <div class="control"><input type="number" name="jobs.keep_days" min="1" max="3650" data-type="int"></div>
+          <span class="setting-help">{{ _("Then they are deleted from the server (never before their backup).") }}</span></label>
+        <label class="setup-field"><span class="field-label">{{ _("Label printer's address") }}</span>
+          <div class="control"><input type="text" name="label_printer.address" placeholder="192.168.1.50" spellcheck="false"></div>
+          <span class="setting-help">{{ _("A Brother P-touch on the lab's network: its IP address or name. Empty: no printer.") }}</span></label>
+        <label class="setup-field"><span class="field-label">{{ _("Label tape (mm)") }}</span>
+          <div class="control"><select name="label_printer.tape_mm" data-type="int"><option>9</option><option>12</option><option>18</option><option>24</option></select></div></label>
+        <label class="setup-field"><span class="field-label">{{ _("Update by itself") }}</span>
+          <div class="control"><select name="updates.auto"><option value="off">{{ _("only by hand (Sync with git)") }}</option>
+            <option value="night">{{ _("every night, between 3 and 5 am") }}</option></select></div></label>
+      </div>
+    </section>
+
+    <section class="panel setup-step" id="setup-check">
+      <div class="panel-head"><h2><span class="setup-n">6</span> {{ _("Check and set up") }}</h2></div>
+      <p class="panel-text">{{ _("Check lists every setting that would change and whether each repository can be read from this server. Nothing is changed until you press Set up.") }}</p>
+      <div class="sync-actions">
+        <button type="submit" class="btn" id="setup-check-btn">{{ icon("search", 16) }}<span>{{ _("Check") }}</span></button>
+        <button type="button" class="btn btn-primary" id="setup-apply-btn" disabled>{{ icon("check", 16) }}<span>{{ _("Set up") }}</span></button>
+        <span class="grow"></span>
+        <button type="button" class="btn btn-small" id="setup-download" title="{{ _('What is on this page as a lab file, to keep or to set up another computer') }}">{{ icon("download", 14) }}<span>{{ _("Download as a lab file") }}</span></button>
+        {% if is_new %}<button type="button" class="btn btn-small" id="setup-skip">{{ _("Skip for now") }}</button>{% endif %}
+      </div>
+      <div id="setup-result"></div>
+    </section>
+  </form>
+</div>
+{% endblock %}
+{% block scripts %}<script src="/static/js/setup.js?v={{ asset_v }}"></script>{% endblock %}

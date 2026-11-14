@@ -1,0 +1,7 @@
+# Toy tools for the base's own tests: a tool source like a lab's own, loaded through
+# tool_folders (conftest.py). Each tool exercises the parts of the base the tests need, not lab science.
+[source]
+name = "fixture"
+title = "Test tools"
+requires_toolkit = ">=1.3,<2"            # toy-table declares a setting (1.1), toy-spots places circles (1.3)
+locale = { pl = "locale/pl.py" }

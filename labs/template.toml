@@ -1,0 +1,93 @@
+# A lab file for MISTER PLIS: everything a new server needs to be set up as your lab's, in one step.
+#
+# Copy this file to labs/<your lab>.toml (or keep it anywhere: on another computer, in a private repository), take the
+# "# " off the lines you need, and fill them in. Every setting is optional: what the file leaves out is not changed.
+# NEVER put a token or password here — GitHub access stays in the Mac's Keychain (the MISTER PLIS app asks for it)
+# or in git's credential helper.
+#
+# Use it:
+#   python -m mister_plis setup labs/<your lab>.toml --check    show what it would change, change nothing
+#   python -m mister_plis setup labs/<your lab>.toml            apply it (asks first)
+#   lab_file = "labs/<your lab>.toml"    in config.toml: a new server applies it when it first starts
+#   or load it on the setup page (/setup), which opens by itself on a new server
+# Applying it again later shows each change first. Settings → Server & updates → Lab setup → Download this lab's file
+# writes a server's own settings in this form. The format: docs/FORMATS.md §12; why and how: docs/LAB_SETUP_PLAN.md.
+
+[lab_file]
+format = 1
+
+# ---- the lab -----------------------------------------------------------------------------------------------------
+# [lab]
+# name = "Smith Lab"          # shown at the top of the sidebar, on PDF reports and in backups (60 characters at most)
+# language = "en"             # the interface's language for a browser that hasn't chosen one: "en" or "pl"
+
+# ---- tools: git repositories with tools (docs/ADDING_TOOLS.md) ------------------------------------------------------
+# One [[tool_sources]] block per repository, in order. The lab's own is trusted: it gets the server's GitHub token.
+# One that isn't trusted is fetched without it, pinned, and left off until someone reviews it on Settings → Tools.
+# [[tool_sources]]
+# name = "lab"                # small letters, digits and _: the folder's and the package's name
+# url = "https://github.com/your-lab/tools.git"
+# branch = "main"
+# trusted = true
+
+# ---- modules: the larger parts (modules/<id>/MODULE.md) ---------------------------------------------------------------
+# [modules]
+# on = ["timemachine", "inventory", "notebook"]   # or "all", or [] for none; a change takes effect at the next start
+
+# Reagents & consumables: two workbooks in one git repository, synced cell by cell.
+# [module.inventory]
+# repo = "https://github.com/your-lab/inventory.git"   # or a folder on this computer with git in it; "" = this server only
+# branch = "main"
+# push = true                 # send each change to the repository about 20 s after it is made
+# auto_sync_minutes = 15      # bring in others' changes every 0 (only by hand), 15, 60 or 240 minutes
+# calculator = "molarity"     # the tool a reagent's "Make a solution" button opens ("" = no button)
+# ollama_url = "http://127.0.0.1:11434"   # a local model (Ollama) for the scheduled tidy-up ("" = checks only)
+# tidy_schedule = "off"       # the tidy-up: "off" (only by hand), "daily" or "weekdays"
+# tidy_at = "02:30"           # at what time
+# tidy_model = ""             # which of the local model's models
+# tidy_apply = "checks"       # what it may change by itself: "none", "checks" (format and spelling) or "all"
+
+# The lab notebook: chosen folders of an Obsidian vault in a git repository, read-only.
+# [module.notebook]
+# repo = "https://github.com/your-lab/notes.git"       # or a folder on this computer with git in it; "" = off
+# branch = "main"
+# folders = ["Protocols/Methods", "Protocols/Reagents"]   # the vault's folders shown to the lab
+# auto_sync_minutes = 15      # 0 (only by hand), 15, 60 or 240
+
+# ---- jobs, storage and backups ------------------------------------------------------------------------------------
+# [jobs]
+# keep_days = 30              # results are deleted from the server after this (never before their backup)
+# keep_uploads_days = 3
+# max_upload_mb = 2048        # the largest file one may upload
+# storage_folder = "/Volumes/Lab data/MISTER PLIS"   # where jobs are kept ("" = the data folder); only while there are none
+
+# [backup]
+# folder = "/Volumes/LabNAS/MISTER PLIS backup"      # this computer's path to the backup disk ("" = no backups)
+# after_days = 1              # 0 (as soon as a job is done), 1, 3 or 7
+
+# ---- the label printer (a Brother P-touch on the lab's network) ---------------------------------------------------
+# [label_printer]
+# address = "192.168.1.50"    # its IP address or host name, optionally :port ("" = none)
+# tape_mm = 12                # 9, 12, 18 or 24
+# hires = true                # high resolution
+# half_cut = true             # cut between labels, not through the backing
+# auto_cut = false            # cut right through
+# chain = true                # leave the end of the strip in the printer
+# logo = ""                   # up the left edge of every label: a picture (PNG or JPEG, at most 256 kB) next to this
+#                             # file, e.g. "our-logo.png", or an https:// address; "" = no logo. A downloaded lab
+#                             # file carries the picture itself (logo = "data:image/png;base64,…")
+
+# ---- updates ------------------------------------------------------------------------------------------------------
+# [updates]
+# auto = "off"                # "night" = pull new code and restart at night; "off" = only with Sync with git
+# channel = "beta"            # which releases this server follows: "beta" (first) or "stable"
+# feed = ""                   # the release feed's https:// address (Settings → Server & updates shows what is newer)
+
+# ---- tools beyond the sources above ----------------------------------------------------------------------------------
+# [tools]
+# bundled_off = []            # tool sources that come with MISTER PLIS, switched off, e.g. ["basic"]
+# catalogue = ""              # a tool catalogue's https:// address: Settings → Tools → Browse lists what it offers
+
+# ---- a tool's own settings (Settings → Tools), by tool id: what the tool needs on this computer -----------------------
+# [tool."<tool id>"]
+# "<setting>" = "/Applications/Blender.app/Contents/MacOS/Blender"   # e.g. where a program is

@@ -1,0 +1,29 @@
+# The base as an installable package (docs/reorg/P1.md, task 1.9). The server itself still starts from its git
+# checkout (`python -m mister_plis`); this lets a tools repository's own tests `pip install` the base at a branch:
+#   pip install "mister-plis @ git+https://github.com/michalby/MISTER_PLIS@stable"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mister-plis"
+description = "MISTER PLIS: a web toolbox for the lab (the base: server, toolkit for tools, modules)"
+requires-python = ">=3.11"
+license = { text = "GPL-3.0-or-later" }
+classifiers = ["License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)"]
+dynamic = ["version", "dependencies"]
+
+[tool.setuptools.dynamic]
+version = { attr = "mister_plis.__version__" }
+dependencies = { file = ["requirements.txt"] }
+
+[tool.setuptools.packages.find]
+include = ["mister_plis", "mister_plis.*", "modules", "modules.*"]
+
+[tool.setuptools.package-data]
+mister_plis = ["templates/**/*", "static/**/*"]
+"modules" = ["*/templates/**/*", "*/static/**/*", "*/*.md"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "modules"]

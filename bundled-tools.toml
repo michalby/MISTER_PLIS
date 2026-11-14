@@ -1,0 +1,14 @@
+# Tool sources that come with MISTER PLIS (docs/PREP_PLAN.md R7). A server running from a git checkout clones each into
+# bundled-tools/<name>/ at the tag given here when it starts (toolsources.ensure_bundled), and again when an update
+# lists a newer tag; a release (scripts/release.sh, the Docker image) brings them with it. They are never committed to
+# this repository ("no tools live here"). A lab can switch one off ([tools] bundled_off in its lab file, or Settings →
+# Tools), and a tool source of the same name stands in for one. Their packages must be MISTER PLIS's own
+# (requirements.txt): a bundled source's requirements aren't installed separately.
+#
+# The basic tools (docs/PUBLISHING.md §5): Solution & dilution, Plate assay, Colorimetric assay. The commit is the pin:
+# fetched by it, whatever the tag points at (the tag is the version shown on Settings → Tools).
+[[source]]
+name = "basic"
+url = "https://github.com/michalby/MISTER_PLIS-basic-tools.git"
+tag = "v1.0.0"
+commit = "37cab9c3babb0f7198b163a97d1a2cdd54cae4df"

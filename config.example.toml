@@ -1,0 +1,54 @@
+# Copy to config.toml (not tracked by git) to change settings on one machine. It lives in the instance's folder: the
+# repository folder, or the folder MISTER_PLIS_HOME names (then relative paths below are relative to that folder).
+# Every setting can also be given as an environment variable: MISTER_PLIS_PORT=9000
+
+# host = "0.0.0.0"            # listen on the whole network ("127.0.0.1" = this computer only)
+# port = 8000
+# files_port = 8001            # stored files from an address of their own (default: port + 1)
+# files_origin = "off"         # "" = this host, files_port, http; "off" = none; or the address a proxy gives it
+# api_docs = 1                 # publish the API's reference at /api/docs (off by default)
+# job_isolation = "off"        # run jobs in the server's own threads, as before 0.17.0 (default "process": each kept
+#                              # job in a process of its own, without the server's tokens)
+# job_user = "mister-plis-jobs"   # …and as this other user, who can't read the secrets (python -m mister_plis job-user)
+# trusted_proxies = "172.18.0.5"  # a proxy in front (HTTPS) whose X-Forwarded-For/-Proto are believed; "" = 127.0.0.1;
+#                              # "*" = any (only when nothing else can reach the server). docs/DEPLOY_LINUX.md, HTTPS
+# server_names = ["mister-plis.lab.example"]   # other names this machine is reached by (e.g. a proxy's); its own
+#                              # names and IP addresses always work; nothing else is needed for people on the network.
+#                              # "*" = any name (turns off the check against DNS rebinding)
+# lab_name = "Smith Lab"       # shown under the logo; Settings → Server & updates can set another for everyone
+# data_dir = "data"            # the server's own state (settings, uploads); relative to the instance's folder, or absolute
+# storage_dir = ""             # jobs (one folder each) and tools' saved data; "" = data_dir.
+#                              # A folder chosen on Settings → Jobs & backup wins over this.
+# blender_path = "/Applications/Blender.app/Contents/MacOS/Blender"   # the older way: the Blender tool's own
+#                              # setting on Settings → Tools wins over this
+# max_workers = 8              # jobs running at the same time
+# job_retention_days = 30      # results are deleted after this
+# upload_retention_days = 3
+# git_branch = "main"          # branch "Sync with git" pulls (default: the checked-out branch)
+# lab_file = "labs/ourlab.toml"   # set a new server up from this lab file when it first starts (a path in the
+#                              # repository, or an https:// address); ignored once the server is set up. See labs/.
+
+
+# Modules (folders in modules/): "" = what the lab's setup chose (else all of them), "none" = none, or a list,
+# e.g. "timemachine, inventory". Set here, it wins on this machine.
+# modules = ""
+
+# Tool folders on this computer, loaded before the tool sources (Settings → Tools): a working copy of
+# a tools repository while you write tools. It stands in for the source of the same name (its manifest's name).
+# tool_folders = ["~/Code/MISTER_PLIS-tools"]
+# fetch_tool_sources = 1      # fetch the tool sources not here yet when the server starts (0 = never)
+
+# The modules' own settings are chosen when the lab is set up (a lab file in labs/, the setup page) or on each module's
+# Settings tab, and stored by the server. A key here wins over that on this machine, e.g. to keep a development copy
+# off the lab's real inventory. As environment variables: MISTER_PLIS_MODULE_INVENTORY_REPO="" and so on.
+# [module.inventory]
+# repo = ""                  # "" = no sync: the inventory stays on this machine
+# repo = "~/Lab/inventory"   # or a folder on this computer with git initialised in it (its files are kept up to date)
+# branch = "main"
+# ollama_url = "http://127.0.0.1:11434"   # the local model for the scheduled tidy-up ("" = no model)
+# calculator = "molarity"   # the tool a reagent's "Make a solution" button opens ("" = no button)
+
+# [module.notebook]
+# repo = ""                  # "" turns the notebook off
+# repo = "~/Obsidian/Lab"    # or the vault's folder on this computer, with git initialised in it
+# branch = "main"

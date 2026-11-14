@@ -1,0 +1,61 @@
+{% from "settings/macros.html" import choice, setting, scope %}
+<p class="lede tab-lede">{{ _("How the files you download look, and the label printer every tool that makes labels prints to. Every tool's results follow these.") }}</p>
+
+<section class="panel">
+  <div class="panel-head"><h2>{{ icon("download", 18) }} {{ _("Files you download") }} {{ scope(false) }}</h2></div>
+  {% call setting("Numbers in Excel files", "Numbers keep full precision and work in formulas — Excel shows them with your computer's decimal separator. Text keeps the chosen separator on every computer, but Excel treats it as text. Also used for .csv downloads. Applies to runs started after the change.") %}
+    {{ choice("xlsx_numbers", prefs.xlsx_numbers, [("number", "Numbers"), ("dot", "Text, 1.5"), ("comma", "Text, 1,5")]) }}
+  {% endcall %}
+  {% call setting("PNG resolution of plots", "Size of a downloaded PNG compared with the plot on screen. 3× is sharp enough for papers and posters.") %}
+    {{ choice("plot_scale", prefs.plot_scale, [("2", "2×"), ("3", "3×"), ("4", "4×"), ("6", "6×")]) }}
+  {% endcall %}
+</section>
+
+<section class="panel" id="printer-panel">
+  <script type="application/json" id="printer-info">{{ label_printer|tojson }}</script>
+  <div class="panel-head"><h2>{{ icon("tag", 18) }} {{ _("Label printer") }} {{ scope(true) }}</h2></div>
+  {% call setting("Printer address", "The IP address of the Brother P-touch (PT-E550W) on the lab network, e.g. 192.168.1.50. Give it a fixed address in the router so it doesn't change. Labels made from a protocol (the “Labels” button under Molar and Stock solution) print to it directly — it doesn't need to be added to the computer's printers.") %}
+    <div class="setting-input backup-dir">
+      <div class="control"><input type="text" id="printer-address" spellcheck="false" placeholder="192.168.1.50" value="{{ label_printer.address }}"></div>
+      <button type="button" class="btn btn-small" id="printer-save">{{ _("Save") }}</button>
+    </div>
+  {% endcall %}
+  {% call setting("Logo", "Printed up the left edge of every label (the “Logo” tick in the Labels window leaves it out for one print). A small picture: PNG or JPEG, at most 256 kB; dark on white prints best. Kept in the lab file you download.") %}
+    <div class="setting-input printer-logo">
+      <img id="printer-logo-img" alt="{{ _('Logo') }}" {% if not label_printer.logo %}hidden{% endif %} src="{{ '/api/label/logo.png?v=' ~ label_printer.logo_version if label_printer.logo else '' }}">
+      <span class="muted" id="printer-logo-none" {% if label_printer.logo %}hidden{% endif %}>{{ _("No logo") }}</span>
+      <label class="btn btn-small">{{ _("Choose a picture…") }}<input type="file" id="printer-logo-file" accept="image/png,image/jpeg,image/gif,image/webp" hidden></label>
+      <button type="button" class="btn btn-small" id="printer-logo-remove" {% if not label_printer.logo %}hidden{% endif %}>{{ _("No logo") }}</button>
+    </div>
+  {% endcall %}
+  {% call setting("Tape width", "Used for the preview. When printing, the label is drawn for the tape that is actually in the printer.") %}
+    <div class="seg" id="printer-tape" role="radiogroup">
+      {% for t in label_printer.tape_choices %}
+      <button type="button" role="radio" data-value="{{ t }}" class="{% if t == label_printer.tape_mm %}active{% endif %}" aria-checked="{{ 'true' if t == label_printer.tape_mm else 'false' }}">{{ t }} mm</button>
+      {% endfor %}
+    </div>
+  {% endcall %}
+  {% call setting("Print resolution", "High: 360 dots per inch along the tape (180 across) — smoother letters, slightly slower. Use Standard if the printer refuses high-resolution jobs.") %}
+    <div class="seg" id="printer-hires" role="radiogroup">
+      <button type="button" role="radio" data-value="true" class="{% if label_printer.hires %}active{% endif %}" aria-checked="{{ 'true' if label_printer.hires else 'false' }}">{{ _("High") }}</button>
+      <button type="button" role="radio" data-value="false" class="{% if not label_printer.hires %}active{% endif %}" aria-checked="{{ 'false' if label_printer.hires else 'true' }}">{{ _c("printer", "Standard") }}</button>
+    </div>
+  {% endcall %}
+  {% for key, title, help, on, off in [
+    ("half_cut", "Half cut", "Cuts the tape between labels but not its backing, so the strip stays together and each label peels off on its own.", "On", "Off"),
+    ("auto_cut", "Auto cut", "Cuts right through: after the whole strip when half cut is on, otherwise after each label. Turn it off to cut with the printer's button yourself.", "On", "Off"),
+    ("chain", "Chain printing", "The end of the strip stays in the printer instead of being fed out and cut — saves tape when printing several strips in a row; press the printer's cut button for the last one.", "On", "Off"),
+  ] %}
+  {% call setting(title, help) %}
+    <div class="seg printer-bool" data-key="{{ key }}" role="radiogroup">
+      <button type="button" role="radio" data-value="true" class="{% if label_printer[key] %}active{% endif %}" aria-checked="{{ 'true' if label_printer[key] else 'false' }}">{{ _(on) }}</button>
+      <button type="button" role="radio" data-value="false" class="{% if not label_printer[key] %}active{% endif %}" aria-checked="{{ 'false' if label_printer[key] else 'true' }}">{{ _(off) }}</button>
+    </div>
+  {% endcall %}
+  {% endfor %}
+  {% call setting("Printer status", "") %}
+    <div class="setting-help" id="printer-status"></div>
+    <div class="seg"><button type="button" id="printer-check">{{ _("Check printer") }}</button></div>
+  {% endcall %}
+</section>
+{% for p in module_panels("settings:exports") %}{% include p %}{% endfor %}

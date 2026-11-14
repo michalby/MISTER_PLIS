@@ -1,0 +1,57 @@
+{% from "settings/macros.html" import choice, setting, scope %}
+<p class="lede tab-lede">{{ _("Yours alone: kept in this browser's cookies, so they stay after you close the page and after updates. On another computer, set them again.") }}</p>
+
+<section class="panel">
+  <div class="panel-head"><h2>{{ icon("user", 18) }} {{ _("You") }} {{ scope(false) }}</h2></div>
+  {% if person.signed_in %}
+  {% call setting("Your name", "Your account's name: added to the names of your result files, shown next to the jobs you run and on PDF reports. An admin can change who has which account (Settings → People).") %}
+    <div class="control setting-input"><input type="text" value="{{ person.name }}" disabled aria-label="{{ _('Your name') }}"></div>
+  {% endcall %}
+  {% else %}
+  {% call setting("Your name", "Added to the names of your result files (2026-10-19_Anna-Kowalska_…xlsx), shown next to the jobs you run and on PDF reports. Everyone in the lab can see and download everyone's results.") %}
+    <div class="control setting-input"><input type="text" id="pref-name" maxlength="60" autocomplete="name" placeholder="{{ _('e.g. Anna Kowalska') }}" value="{{ prefs.name }}"></div>
+  {% endcall %}
+  {% endif %}
+</section>
+
+{% if person.signed_in %}
+<section class="panel" id="password-panel">
+  <div class="panel-head"><h2>{{ icon("user", 18) }} {{ _("Your password") }}</h2></div>
+  <form class="account-form" id="password-form" novalidate>
+    <label class="field"><span class="field-label">{{ _("Current password") }}</span>
+      <div class="control"><input type="password" name="old" autocomplete="current-password"></div></label>
+    <label class="field"><span class="field-label">{{ _("New password") }}</span>
+      <div class="control"><input type="password" name="new" autocomplete="new-password" minlength="8"></div></label>
+    <label class="field"><span class="field-label">{{ _("The same again") }}</span>
+      <div class="control"><input type="password" name="repeat" autocomplete="new-password" minlength="8"></div></label>
+    <div><button type="submit" class="btn">{{ _("Change the password") }}</button></div>
+  </form>
+  {% call setting("Sign out", "On this browser, or on every browser you signed in on (a changed password signs out the others too).") %}
+    <div class="seg"><button type="button" id="sign-out">{{ _("Sign out") }}</button><button type="button" id="sign-out-all">{{ _("Everywhere") }}</button></div>
+  {% endcall %}
+</section>
+{% endif %}
+
+<section class="panel">
+  <div class="panel-head"><h2>{{ icon("palette", 18) }} {{ _("Appearance") }} {{ scope(false) }}</h2></div>
+  {% call setting("Language", "The language of the pages, buttons and results you run from now on. Also switched with PL / EN in the top bar.") %}
+    {{ choice("lang", prefs.lang, langs.items()) }}
+  {% endcall %}
+  {% call setting("Theme", "“Match system” follows the light / dark mode of your computer.") %}
+    {{ choice("theme", prefs.theme, [("auto", "Match system"), ("light", "Light"), ("dark", "Dark")]) }}
+  {% endcall %}
+  {% call setting("Decimal separator on screen", "Results, tables, plot labels and copied values. Number fields accept both.") %}
+    {{ choice("decimal", prefs.decimal, [("dot", "1.5"), ("comma", "1,5")]) }}
+  {% endcall %}
+</section>
+
+<section class="panel">
+  <div class="panel-head"><h2>{{ icon("tool", 18) }} {{ _("Forms") }} {{ scope(false) }}</h2></div>
+  {% call setting("Remember inputs", "Each tool opens with the values you used last time (uploaded files are not kept).") %}
+    {{ choice("remember_inputs", prefs.remember_inputs, [("on", "On"), ("off", "Off")]) }}
+  {% endcall %}
+  {% call setting("Data saved in this browser", "Remembered inputs, sample colours and saved plate layouts. Compounds saved for the whole lab are not affected.") %}
+    <div class="seg"><button type="button" id="forget-btn">{{ _("Forget") }}</button></div>
+  {% endcall %}
+</section>
+{% for p in module_panels("settings:you") %}{% include p %}{% endfor %}

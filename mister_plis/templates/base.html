@@ -1,0 +1,165 @@
+<!doctype html>
+{%- set shells = module_shell(hide_side_panels) %}
+<html lang="{{ prefs.lang }}" data-theme="{{ 'dark' if prefs.theme == 'dark' or dark else 'light' }}" class="{{ shells|map(attribute='html_class')|join(' ') }}{% if shell_class %} {{ shell_class }}{% endif %}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}MISTER PLIS{% endblock %}</title>
+  <link rel="icon" href="/static/favicon.svg?v={{ asset_v }}" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/css/app.css?v={{ asset_v }}">
+  {% for href in module_styles %}<link rel="stylesheet" href="{{ href }}?v={{ asset_v }}">
+  {% endfor %}
+  {#- what the scripts start from (static/js/boot.js reads it): data, not code, so no inline script is needed #}
+  <script type="application/json" id="mp-boot">{"commit": {{ running.commit|tojson }}, "icons": {{ icons_json|safe }}, "prefs": {{ prefs|tojson }}, "maxUpload": {{ max_upload|tojson }}, "filesOrigin": {{ files_origin|tojson }}, "dark": {{ 'true' if dark else 'false' }}}</script>
+  <script src="/static/js/boot.js?v={{ asset_v }}"></script>
+  {% for s in shells if s.head %}{% include s.head %}{% endfor %}
+  {% if prefs.lang != "en" %}<script src="/i18n/{{ prefs.lang }}.js?v={{ asset_v }}"></script>{% endif %}
+  {% block head %}{% endblock %}
+</head>
+<body data-page="{% block page %}{% endblock %}">
+{% block before_shell %}{% endblock %}
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="/">
+      <svg class="egg" viewBox="0 0 34 42" aria-hidden="true">
+        <defs>
+          <linearGradient id="egg-fill" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#c4b5fd"/><stop offset=".55" stop-color="#f9a8d4"/><stop offset="1" stop-color="#93c5fd"/>
+          </linearGradient>
+          <radialGradient id="egg-shine" cx=".35" cy=".28" r=".35"><stop offset="0" stop-color="#fff" stop-opacity=".85"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+        </defs>
+        <path d="M17 1.5C8.6 1.5 2 15 2 24.5 2 33.6 8.7 40.5 17 40.5S32 33.6 32 24.5C32 15 25.4 1.5 17 1.5z" fill="url(#egg-fill)"/>
+        <path d="M17 1.5C8.6 1.5 2 15 2 24.5 2 33.6 8.7 40.5 17 40.5S32 33.6 32 24.5C32 15 25.4 1.5 17 1.5z" fill="url(#egg-shine)"/>
+      </svg>
+      <span class="brand-text">
+        <span class="brand-name">MISTER&nbsp;PLIS</span>
+        <span class="brand-sub">{{ lab_name or _("lab toolbox") }}</span>
+      </span>
+    </a>
+
+    <label class="side-search">
+      {{ icon("search", 16) }}
+      <input id="tool-search" type="search" placeholder="{{ _('Find a tool') }}" autocomplete="off">
+      <kbd>/</kbd>
+    </label>
+
+    <nav class="side-nav">
+      <a href="/" class="side-link {% if path == '/' %}active{% endif %}">{{ icon("grid", 18) }}<span>{{ _("All tools") }}</span></a>
+      <a href="/jobs" class="side-link {% if path.startswith('/jobs') %}active{% endif %}">{{ icon("clock", 18) }}<span>{{ _("Jobs & results") }}</span><span class="side-count" id="active-jobs" hidden></span></a>
+      {% for item in module_nav %}
+      <a href="{{ item.href }}" class="side-link side-module side-{{ item.id }} {% if path.startswith(item.match) %}active{% endif %}"{% if item.title %} title="{{ _(item.title) }}"{% endif %}>
+        {% if item.icon_template %}{% with galaxy_id = "-side-" ~ item.id, galaxy_size = 20 %}{% include item.icon_template %}{% endwith %}{% else %}{{ icon(item.icon, 18) }}{% endif %}<span>{{ _(item.label) }}</span>
+      </a>
+      {% endfor %}
+      {% for cat, items in categories %}
+      <div class="side-group">
+        <div class="side-heading">{{ _(cat) }}</div>
+        {% for t in items %}
+        <a href="/tool/{{ t.id }}" class="side-link tool-link {% if path == '/tool/' ~ t.id %}active{% endif %}" data-search="{{ search_text(t) }}">
+          {{ icon(t.icon, 18) }}<span>{{ _(t.name) }}</span>
+        </a>
+        {% endfor %}
+      </div>
+      {% endfor %}
+    </nav>
+
+    <div class="side-foot">
+      <a href="/guide" class="side-link {% if path == '/guide' %}active{% endif %}">{{ icon("book", 18) }}<span>{{ _("Add a tool") }}</span></a>
+      <a href="/feedback" class="side-link side-feedback {% if path == '/feedback' %}active{% endif %}">{% with flask_id = "-side" %}{% include "partials/flask.html" %}{% endwith %}<span>{{ _c("page", "Feedback") }}</span><span class="side-count side-count-soft" id="feedback-count" title="{{ _('Feedback not done yet') }}"{% if not feedback_open %} hidden{% endif %}>{{ feedback_open }}</span></a>
+      <a href="/settings" class="side-link {% if path == '/settings' %}active{% endif %}">{{ icon("settings", 18) }}<span>{{ _("Settings") }}</span></a>
+      <div class="version" title="{{ running.subject }}">
+        v{{ version }} · <code>{{ running.short }}</code>{% if running.date %} · {{ running.date[:10] }}{% endif %}
+      </div>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="top-left">
+        <button class="icon-btn menu-btn" id="menu-btn" aria-label="{{ _('Menu') }}">{{ icon("menu", 20) }}</button>
+        <div class="crumbs">{% block crumbs %}{% endblock %}</div>
+      </div>
+
+      <div class="top-mid">
+        <button type="button" class="fb-btn" id="fb-btn" aria-haspopup="dialog" aria-expanded="false" aria-controls="fb-pop"
+                title="{{ _('Report a bug, an inconvenience or an idea') }}">
+          <span class="fb-btn-aura" aria-hidden="true"></span>
+          <span class="fb-btn-ring" aria-hidden="true"></span>
+          <span class="fb-btn-face">
+            {% with flask_id = "-top" %}{% include "partials/flask.html" %}{% endwith %}
+            <span class="fb-btn-text">{{ _("Feedback") }}</span>
+          </span>
+        </button>
+        {% block topbar_extra %}{% endblock %}
+      </div>
+
+      <div class="top-right">
+        {% for s in shells if s.topbar %}{% include s.topbar %}{% endfor %}
+        <div class="lang-switch" role="radiogroup" aria-label="{{ _('Language') }}">
+          {% for code, name in langs.items() %}
+          <button type="button" role="radio" data-lang="{{ code }}" title="{{ name }}" aria-checked="{{ 'true' if prefs.lang == code else 'false' }}" class="{% if prefs.lang == code %}active{% endif %}">{{ code|upper }}</button>
+          {% endfor %}
+        </div>
+        <a href="/settings#you" class="user-chip {% if not prefs.name %}is-empty{% endif %}" id="user-chip" title="{{ _('Signed in — your password and signing out: Settings → You') if person.signed_in else _('Your name — change it in Settings → You') }}">
+          <span class="user-avatar" id="user-avatar">{{ prefs.name[:1]|upper if prefs.name else "?" }}</span>
+          <span class="user-name" id="user-name">{{ prefs.name or _("Set your name") }}</span>
+        </a>
+        {% block topbar_end %}
+        <button type="button" class="icon-btn theme-btn" id="theme-btn" title="{{ _('Light / dark theme') }}" aria-label="{{ _('Light / dark theme') }}">
+          <span class="when-light">{{ icon("moon", 18) }}</span><span class="when-dark">{{ icon("sun", 18) }}</span>
+        </button>
+        {% endblock %}
+      </div>
+    </header>
+    <div class="content">
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+  {% for s in shells if s.aside %}{% include s.aside %}{% endfor %}
+</div>
+
+<!-- Feedback: a bubble under the button in the top bar; the list is on the Feedback page (/feedback) -->
+<div class="fb-pop" id="fb-pop" role="dialog" aria-modal="false" aria-labelledby="fb-title" hidden>
+  <div class="fb-glow" aria-hidden="true"></div>
+  <div class="fb-ring" aria-hidden="true"></div>
+  <form class="fb-card" id="fb-form" novalidate>
+    <div class="fb-head">
+      <h2 id="fb-title">{{ _("Something to tell us?") }}</h2>
+      <button type="button" class="icon-btn icon-btn-sm" id="fb-close" aria-label="{{ _('Close') }}">{{ icon("x", 16) }}</button>
+    </div>
+    <div class="fb-kinds" role="radiogroup" aria-label="{{ _('Kind of feedback') }}">
+      {% for kind, label, hint in feedback_kinds %}
+      <label class="fb-kind fb-kind-{{ kind }}">
+        <input type="radio" name="kind" value="{{ kind }}"{% if loop.first %} checked{% endif %}>
+        <span class="fb-dot" aria-hidden="true"></span>
+        <span class="fb-kind-text"><b>{{ _(label) }}</b><small>{{ _(hint) }}</small></span>
+      </label>
+      {% endfor %}
+    </div>
+    <textarea id="fb-text" name="text" rows="4" maxlength="4000" required
+              placeholder="{{ _('What happened, or what would help? The page you are on is attached.') }}"></textarea>
+    <div class="fb-foot">
+      <span class="fb-who" id="fb-who"></span>
+      <button type="submit" class="btn btn-primary btn-small" id="fb-send">{{ _("Send") }}</button>
+    </div>
+    <div class="fb-thanks" aria-live="polite">
+      <span class="fb-thanks-icon">{{ icon("check", 22) }}</span>
+      <b>{{ _("Thank you!") }}</b>
+      <span>{{ _("It's on the list on the Feedback page.") }} <a class="link" href="/feedback">{{ _("See all feedback") }}</a></span>
+    </div>
+  </form>
+</div>
+
+<div class="update-banner" id="update-banner" hidden>
+  <span class="pulse"></span>
+  <span><strong>{{ _("A new version of MISTER PLIS is live.") }}</strong> {{ _("Refresh to get it.") }}</span>
+  <button class="btn btn-small btn-light" id="update-refresh">{{ _("Refresh") }}</button>
+</div>
+
+<script src="/static/js/app.js?v={{ asset_v }}"></script>
+<script src="/static/js/feedback.js?v={{ asset_v }}"></script>
+{% for src in module_scripts(self.page()) %}<script src="{{ src }}?v={{ asset_v }}"></script>
+{% endfor %}{% block scripts %}{% endblock %}
+</body>
+</html>

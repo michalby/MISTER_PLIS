@@ -1,0 +1,33 @@
+# HTTPS in front of MISTER PLIS (docs/DEPLOY_LINUX.md, "HTTPS"): Caddy answers on ports 443 (and 80, which only sends
+# browsers on to 443); MISTER PLIS itself is no longer published on the network, so nothing reaches it but Caddy.
+#
+#   MISTER_PLIS_DOMAIN=mister-plis.lab.example MISTER_PLIS_TLS="tls internal" \
+#     docker compose -f docker-compose.yml -f docker-compose.https.yml up -d
+#
+# (or put MISTER_PLIS_DOMAIN and MISTER_PLIS_TLS in a file called .env next to the compose files). Needs Docker Compose
+# 2.24 or newer (for "!reset").
+services:
+  mister-plis:
+    ports: !reset []
+    environment:
+      # only Caddy can reach the server now, so what it says about the browser (its address, https) is believed
+      MISTER_PLIS_TRUSTED_PROXIES: "*"
+      # the name people open (the server answers only to its own names: docs/SECURITY_AUDIT.md H1)
+      MISTER_PLIS_SERVER_NAMES: ${MISTER_PLIS_DOMAIN:?set MISTER_PLIS_DOMAIN to the name people open, e.g. mister-plis.lab.example}
+      # stored files from a name of their own (the second block in Caddyfile), or "" for none
+      MISTER_PLIS_FILES_ORIGIN: ${MISTER_PLIS_FILES_ORIGIN:-}
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on: [mister-plis]
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      MISTER_PLIS_DOMAIN: ${MISTER_PLIS_DOMAIN}
+      MISTER_PLIS_TLS: ${MISTER_PLIS_TLS:-}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./caddy-data:/data             # its certificates (and, with "tls internal", its own certificate authority)
+      - ./certs:/certs:ro              # a certificate from the university's IT, if used

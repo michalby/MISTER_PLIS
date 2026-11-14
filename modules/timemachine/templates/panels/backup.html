@@ -1,0 +1,10 @@
+{# Settings → Jobs & backup: Time Machine's own backup (modules/timemachine/backup.py) #}
+<section class="panel" id="tm-backup">
+  <div class="panel-head"><h2>{{ icon("galaxy", 18) }} {{ _("Time Machine in the backup folder") }}</h2></div>
+  <p class="panel-text">{{ _("Time Machine has no folder of its own to choose: it keeps its results in the storage folder, beside the jobs, and whenever it changes it is copied into the backup folder, in “Time Machine” — everything it keeps and its whole history as one file, plus each kept result in readable form. If this server's disk is lost, Time Machine comes back from there.") }}</p>
+  <dl class="kv" id="tm-backup-info"><dt>{{ _("Loading…") }}</dt><dd></dd></dl>
+  <div class="sync-actions">
+    <button type="button" class="btn" id="tm-backup-now">{{ _("Back up Time Machine now") }}</button>
+    <button type="button" class="btn" id="tm-backup-restore">{{ _("Restore Time Machine from the backup") }}</button>
+  </div>
+</section>
