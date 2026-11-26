@@ -126,7 +126,7 @@ def temporary_password() -> str:
 def clean_name(name: str) -> str:
     name = " ".join(str(name or "").split())
     if not name:
-        raise ToolError("Give the person's name, as it appears on their results (e.g. Anna Kowalska).")
+        raise ToolError("Give the person's name, as it appears on their results.")
     if len(name) > 60:
         raise ToolError("A name can be 60 characters at most.")
     return name

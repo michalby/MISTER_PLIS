@@ -147,8 +147,8 @@ UI: dict[str, str] = {
     "You": "Użytkownik",
     "Your name": "Imię i nazwisko",
     "Person's name": "Imię i nazwisko",
-    "Added to the names of your result files (2026-10-19_Anna-Kowalska_…xlsx), shown next to the jobs you run and on PDF reports. Everyone in the lab can see and download everyone's results.":
-        "Pojawia się w nazwach plików z wynikami (2026-10-19_Anna-Kowalska_…xlsx), przy uruchomionych zadaniach oraz w raportach PDF. "
+    "Added to the names of your result files, shown next to the jobs you run and on PDF reports. Everyone in the lab can see and download everyone's results.":
+        "Pojawia się w nazwach plików z wynikami, przy uruchomionych zadaniach oraz w raportach PDF. "
         "Wszyscy członkowie laboratorium mają wgląd we wszystkie wyniki i mogą je pobierać.",
     "whole lab": "całe laboratorium",
     ", but only once they are backed up": ", ale dopiero po wykonaniu kopii zapasowej",
@@ -808,7 +808,6 @@ UI: dict[str, str] = {
     'The lab': 'Laboratorium',
     "The lab's name": 'Nazwa laboratorium',
     'Shown under “MISTER PLIS” at the top of the sidebar, and printed on PDF reports and in the backups. Leave empty for “lab toolbox”.': 'Wyświetlana pod napisem „MISTER PLIS” u góry paska bocznego, drukowana w raportach PDF i zapisywana w kopiach zapasowych. Pozostaw puste, aby wyświetlać „narzędzia laboratoryjne”.',
-    'e.g. Smith Lab': 'np. Pracownia Kowalskiego',
     "The lab's name can be 60 characters at most.": 'Nazwa laboratorium może mieć najwyżej 60 znaków.',
     'page::Feedback': 'Zgłoszenia',
     'Everything sent': 'Wszystkie zgłoszenia',
@@ -1148,7 +1147,7 @@ UI: dict[str, str] = {
     'Make the first account (yours, an admin) first.': 'Najpierw utwórz pierwsze konto (swoje, administratora).',
     'A password needs at least 8 characters.': 'Hasło musi mieć co najmniej 8 znaków.',
     'That password is too long (200 characters at most).': 'To hasło jest za długie (najwyżej 200 znaków).',
-    "Give the person's name, as it appears on their results (e.g. Anna Kowalska).": 'Podaj imię i nazwisko tej osoby, tak jak na jej wynikach (np. Anna Kowalska).',
+    "Give the person's name, as it appears on their results.": 'Podaj imię i nazwisko tej osoby, tak jak na jej wynikach.',
     'A name can be 60 characters at most.': 'Nazwa może mieć najwyżej 60 znaków.',
     'Choose admin or member.': 'Wybierz: administrator albo członek.',
     'There is an account with that name already.': 'Konto o tej nazwie już istnieje.',

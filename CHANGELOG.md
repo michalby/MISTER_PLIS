@@ -9,6 +9,8 @@ each version writes are in `mister_plis/formats.py`; every format is described i
 - Input boxes no longer suggest made-up names: no example person (your name, a new account), lab name, job title,
   file name keyword, sample names (plate and spot layouts) or Time Machine title is shown in them any more. A box
   still shows what it is for, and the lab name box shows the lab file's name when there is one.
+- No made-up names in help and messages either: the "Your name" help, the message asking for a person's name
+  and the transfer folder box on the setup page.
 
 ## 0.23.0 — 2026-11-14
 
