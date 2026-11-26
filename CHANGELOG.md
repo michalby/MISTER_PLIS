@@ -4,13 +4,18 @@ Newest first. Each version says what a lab will notice. The version numbers (`MA
 a lab must act on (e.g. a data format older versions can't read), MINOR for new features, PATCH for fixes. The formats
 each version writes are in `mister_plis/formats.py`; every format is described in docs/FORMATS.md.
 
+## 0.23.2 — 2026-11-26
+
+- No made-up names anywhere else either: the boxes for your name, a new account's person, the lab's name (setup page
+  and Settings → Server) and a Time Machine task's or added result's title no longer suggest one, nor does the
+  tool source name box or the transfer folder box on the setup page. The lab name box shows the lab file's name when
+  there is one. The "Your name" help and the message asking for a person's name have no example name any more.
+
 ## 0.23.1 — 2026-11-26
 
-- Input boxes no longer suggest made-up names: no example person (your name, a new account), lab name, job title,
-  file name keyword, sample names (plate and spot layouts) or Time Machine title is shown in them any more. A box
-  still shows what it is for, and the lab name box shows the lab file's name when there is one.
-- No made-up names in help and messages either: the "Your name" help, the message asking for a person's name
-  and the transfer folder box on the setup page.
+- No example names in the forms: the Title and File name keyword boxes of a tool, a result's title and the sample
+  name boxes of plate layouts and regions on a picture no longer suggest a name ("e.g. WT vs mutant…"). The Title box
+  says what it is for.
 
 ## 0.23.0 — 2026-11-14
 

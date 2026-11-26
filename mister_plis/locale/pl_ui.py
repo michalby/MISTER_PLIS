@@ -646,7 +646,6 @@ UI: dict[str, str] = {
     "Title": "Tytuł",
     "Add a title": "Dodaj tytuł",
     "Change title": "Zmień tytuł",
-    "Shown after the tool name": "Wyświetlany po nazwie narzędzia",
     # --- Storage (System & updates; mister_plis/storage.py) ----------------------------------------------------
     "Use another folder": "Użyj innego folderu",
     "The jobs and the tools' saved data are copied there and checked file by file, then the server restarts with the new folder. The old folders are kept, renamed. Not while jobs are running.":
@@ -1174,6 +1173,7 @@ UI: dict[str, str] = {
     "The job's process couldn't be started: {error}": 'Nie udało się uruchomić procesu zadania: {error}',
     # circles on a picture (ImageSpots, toolkit 1.3)
     "Enter a radius": "Podaj promień",
+    "Shown after the tool name": "Wyświetlany po nazwie narzędzia",
     "Add regions": "Dodawaj obszary",
     "Your changes to the regions were kept: press Place again to place them from the settings.": "Zachowano twoje zmiany obszarów: kliknij Rozmieść ponownie, aby rozmieścić je według ustawień.",
     "Clear all sample names?": "Wyczyścić wszystkie nazwy próbek?",
