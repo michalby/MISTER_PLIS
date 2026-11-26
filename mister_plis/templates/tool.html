@@ -23,11 +23,11 @@
     <div class="form-actions">
       <div class="file-keyword job-title-field">
         <label class="field-label" for="f-title"><span>{{ _("Title") }}</span><span class="opt">{{ _("optional") }}</span></label>
-        <div class="control"><input id="f-title" type="text" maxlength="120" placeholder="{{ _('e.g. WT vs mutant, day 3 — shown after the tool name') }}"></div>
+        <div class="control"><input id="f-title" type="text" maxlength="120" placeholder="{{ _('Shown after the tool name') }}"></div>
       </div>
       <div class="file-keyword">
         <label class="field-label" for="f-keyword"><span>{{ _("File name keyword") }}</span><span class="opt">{{ _("optional") }}</span></label>
-        <div class="control"><input id="f-keyword" type="text" maxlength="60" placeholder="{{ _('e.g. WT vs mutant, light series 2') }}"></div>
+        <div class="control"><input id="f-keyword" type="text" maxlength="60"></div>
         <div class="field-help" id="keyword-preview"></div>
       </div>
       <button type="submit" class="btn btn-primary btn-block" id="run-btn" {% if reason %}disabled{% endif %}>

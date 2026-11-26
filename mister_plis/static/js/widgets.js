@@ -288,7 +288,7 @@
     const roleSeg = el("div", { class: "seg" }, [["blank", "Blank"], ["standard", "Standard"], ["sample", "Sample"], ["empty", "Clear"]].map(([r, l]) =>
       el("button", { type: "button", class: r === role ? "active" : "", dataset: { role: r }, onclick: () => { role = r; syncRole(); } }, MP.t(l))));
     const valIn = el("input", { type: "text", placeholder: MP.t("e.g. 2000, 1000, 500, 250, 125, 62.5, 0") });
-    const nameIn = el("input", { type: "text", placeholder: MP.t("e.g. WT  or  WT, mut1, mut2") });
+    const nameIn = el("input", { type: "text" });
     const dilIn = el("input", { type: "text", value: "1", placeholder: MP.t("1  or  1, 2, 4, 8") });
     const dirSel = el("select", {}, el("option", { value: "rows" }, MP.t("one per row (A, B, C…)")), el("option", { value: "cols" }, MP.t("one per column (1, 2, 3…)")));
     const dilDir = el("select", {}, el("option", { value: "rows" }, MP.t("down the rows")), el("option", { value: "cols" }, MP.t("across the columns")));
@@ -690,7 +690,7 @@
         .forEach((s) => { const k = `${gi(s)}|${dir === "rows" ? s.row : s.col}`; if (!by.has(k)) by.set(k, []); by.get(k).push(s); });
       return [...by.values(), ...byPosition(list.filter((s) => !onGrid(s)), dir)];
     }
-    const nameIn = el("input", { type: "text", placeholder: MP.t("e.g. WT  or  WT, mut1, mut2") });
+    const nameIn = el("input", { type: "text" });
     const dirSel = el("select", {}, el("option", { value: "rows" }, MP.t("one per row (A, B, C…)")), el("option", { value: "cols" }, MP.t("one per column (1, 2, 3…)")));
     function applyNames() {
       const chosen = spots.filter((s) => selected.has(s.id));

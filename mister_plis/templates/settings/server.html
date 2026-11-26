@@ -5,7 +5,7 @@
   <div class="panel-head"><h2>{{ icon("egg", 18) }} {{ _("The lab") }} {{ scope(true) }}</h2></div>
   {% call setting("The lab's name", "Shown under “MISTER PLIS” at the top of the sidebar, and printed on PDF reports and in the backups. Leave empty for “lab toolbox”.") %}
     <div class="setting-input backup-dir">
-      <div class="control"><input type="text" id="lab-name" maxlength="60" spellcheck="false" placeholder="{{ lab.lab_name_default or _('e.g. Smith Lab') }}" value="{{ lab.lab_name }}"></div>
+      <div class="control"><input type="text" id="lab-name" maxlength="60" spellcheck="false" placeholder="{{ lab.lab_name_default or '' }}" value="{{ lab.lab_name }}"></div>
       <button type="button" class="btn btn-small" id="lab-name-save">{{ _("Save") }}</button>
     </div>
   {% endcall %}

@@ -6,7 +6,7 @@
   <p class="panel-text">{{ _("Sign-in is off: anyone who can reach this server can use it and change its settings. Make the first account — yours, as an admin — to turn sign-in on. From then on everyone signs in, and only admins change Settings; you add the others' accounts here.") }}</p>
   <form class="account-form" id="first-account" novalidate>
     <label class="field"><span class="field-label">{{ _("Your name") }}</span>
-      <div class="control"><input type="text" name="name" maxlength="60" autocomplete="username" value="{{ prefs.name }}" placeholder="{{ _('e.g. Anna Kowalska') }}"></div></label>
+      <div class="control"><input type="text" name="name" maxlength="60" autocomplete="username" value="{{ prefs.name }}"></div></label>
     <label class="field"><span class="field-label">{{ _("Password") }}</span>
       <div class="control"><input type="password" name="password" autocomplete="new-password" minlength="8"></div></label>
     <label class="field"><span class="field-label">{{ _("The same again") }}</span>
@@ -22,7 +22,7 @@
   <p class="panel-text">{{ _("Everyone signs in with their own account. Admins may change Settings; members do the everyday work. A new account gets a temporary password, shown once: its person chooses their own the first time they sign in. The name is the one on their results.") }}</p>
   <ul class="cred-list" id="account-list"><li class="muted">{{ _("Loading…") }}</li></ul>
   <form class="cred-form account-add" id="account-add" novalidate>
-    <div class="control"><input type="text" name="name" list="account-people" maxlength="60" spellcheck="false" placeholder="{{ _('Name, e.g. Anna Kowalska') }}" aria-label="{{ _('Name') }}"></div>
+    <div class="control"><input type="text" name="name" list="account-people" maxlength="60" spellcheck="false" placeholder="{{ _("Person's name") }}" aria-label="{{ _("Person's name") }}"></div>
     <datalist id="account-people"></datalist>
     <div class="control"><select name="role" aria-label="{{ _('Role') }}"><option value="member">{{ _("Member") }}</option><option value="admin">{{ _("Admin") }}</option></select></div>
     <button type="submit" class="btn btn-small">{{ _("Add the account") }}</button>

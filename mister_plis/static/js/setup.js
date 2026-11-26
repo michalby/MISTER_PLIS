@@ -49,7 +49,7 @@
   }
 
   function sourceRow(s, here) {
-    const name = el("input", { type: "text", name: "src.name", value: s.name || "", placeholder: "lab", spellcheck: "false", "aria-label": MP.t("Name") });
+    const name = el("input", { type: "text", name: "src.name", value: s.name || "", spellcheck: "false", "aria-label": MP.t("Name") });
     const url = el("input", { type: "text", name: "src.url", value: s.url || "", placeholder: "https://github.com/your-lab/tools.git", spellcheck: "false", "aria-label": MP.t("Repository address") });
     const branch = el("input", { type: "text", name: "src.branch", value: s.branch || "main", placeholder: "main", spellcheck: "false", "aria-label": MP.t("Branch") });
     const trusted = el("input", { type: "checkbox", name: "src.trusted" });

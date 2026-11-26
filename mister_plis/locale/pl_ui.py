@@ -146,10 +146,10 @@ UI: dict[str, str] = {
     # --- settings ------------------------------------------------------------------------------------
     "You": "Użytkownik",
     "Your name": "Imię i nazwisko",
+    "Person's name": "Imię i nazwisko",
     "Added to the names of your result files (2026-10-19_Anna-Kowalska_…xlsx), shown next to the jobs you run and on PDF reports. Everyone in the lab can see and download everyone's results.":
         "Pojawia się w nazwach plików z wynikami (2026-10-19_Anna-Kowalska_…xlsx), przy uruchomionych zadaniach oraz w raportach PDF. "
         "Wszyscy członkowie laboratorium mają wgląd we wszystkie wyniki i mogą je pobierać.",
-    "e.g. Anna Kowalska": "np. Anna Kowalska",
     "whole lab": "całe laboratorium",
     ", but only once they are backed up": ", ale dopiero po wykonaniu kopii zapasowej",
     "Backup folder": "Folder kopii zapasowych",
@@ -502,7 +502,6 @@ UI: dict[str, str] = {
     "updates as you type": "obliczenia na bieżąco",
     "File name keyword": "Słowo kluczowe w nazwach plików",
     "optional": "opcjonalnie",
-    "e.g. WT vs mutant, light series 2": "np. WT vs mutant, seria 2",
     "Fill in the values — results appear here instantly.": "Wprowadź wartości — wyniki pojawią się tutaj od razu.",
     "Set the inputs and press": "Wprowadź dane i kliknij",
     "Results show up here.": "Wyniki pojawią się tutaj.",
@@ -596,7 +595,6 @@ UI: dict[str, str] = {
     "{blank} blank · {standard} standard · {sample} sample wells ({samples} samples)":
         "ślepe próby: {blank} · wzorce: {standard} · dołki z próbkami: {sample} (liczba próbek: {samples})",
     "e.g. 2000, 1000, 500, 250, 125, 62.5, 0": "np. 2000, 1000, 500, 250, 125, 62.5, 0",
-    "e.g. WT  or  WT, mut1, mut2": "np. WT  lub  WT, mut1, mut2",
     "1  or  1, 2, 4, 8": "1  lub  1, 2, 4, 8",
     "one per row (A, B, C…)": "po jednej w wierszu (A, B, C…)",
     "one per column (1, 2, 3…)": "po jednej w kolumnie (1, 2, 3…)",
@@ -648,8 +646,7 @@ UI: dict[str, str] = {
     "Title": "Tytuł",
     "Add a title": "Dodaj tytuł",
     "Change title": "Zmień tytuł",
-    "e.g. WT vs mutant, day 3": "np. WT vs mutant, dzień 3",
-    "e.g. WT vs mutant, day 3 — shown after the tool name": "np. WT vs mutant, dzień 3 — wyświetlany po nazwie narzędzia",
+    "Shown after the tool name": "Wyświetlany po nazwie narzędzia",
     # --- Storage (System & updates; mister_plis/storage.py) ----------------------------------------------------
     "Use another folder": "Użyj innego folderu",
     "The jobs and the tools' saved data are copied there and checked file by file, then the server restarts with the new folder. The old folders are kept, renamed. Not while jobs are running.":
@@ -1126,7 +1123,6 @@ UI: dict[str, str] = {
     'Make admin': 'Zrób administratorem',
     'Make member': 'Zrób członkiem',
     'Make my account and turn sign-in on': 'Utwórz moje konto i włącz logowanie',
-    'Name, e.g. Anna Kowalska': 'Imię i nazwisko, np. Anna Kowalska',
     'Nothing yet.': 'Na razie nic.',
     'Password': 'Hasło',
     "Remove {name}'s account? They can't sign in any more; their results stay.": 'Usunąć konto: {name}? Ta osoba nie będzie mogła się już zalogować; jej wyniki zostaną.',

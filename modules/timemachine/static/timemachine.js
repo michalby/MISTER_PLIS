@@ -830,7 +830,7 @@
   }
 
   $("#tm-task-btn").addEventListener("click", () => {
-    const title = el("input", { type: "text", maxlength: 120, required: true, placeholder: MP.t("e.g. 77K spectra of the PsbA mutant") });
+    const title = el("input", { type: "text", maxlength: 120, required: true });
     const desc = el("textarea", { rows: 4, maxlength: 4000, required: true, placeholder: MP.t("What is to be done, with which samples, what the result should be…") });
     const who = personInput();
     const chosen = new Set(st.project && st.project !== "none" ? [st.project] : []);
@@ -874,7 +874,7 @@
   // ------------------------------------------------------------------ adding files by hand
   // Something worth keeping that never was a job: title, description and at least one file — all required.
   $("#tm-manual-btn").addEventListener("click", () => {
-    const title = el("input", { type: "text", maxlength: 120, required: true, placeholder: MP.t("e.g. Western blot of PsbA, March 2026") });
+    const title = el("input", { type: "text", maxlength: 120, required: true });
     const desc = el("textarea", { rows: 4, maxlength: 4000, required: true, placeholder: MP.t("What it is, how it was made, why it is kept…") });
     let check = () => { };
     const files = dropFiles(() => check());
