@@ -228,7 +228,7 @@
         MP.el("button", { type: "button", class: "link-btn job-title-btn", onclick: edit }, MP.icon("tag", 13), title ? MP.t("Change title") : MP.t("Add a title")));
     };
     const edit = () => {
-      const input = MP.el("input", { type: "text", maxlength: 120, value: title || "", placeholder: MP.t("e.g. WT vs mutant, day 3"), "aria-label": MP.t("Title") });
+      const input = MP.el("input", { type: "text", maxlength: 120, value: title || "", "aria-label": MP.t("Title") });
       const done = async (keep) => {
         if (keep) {
           try { title = await save(input.value.trim()); MP.toast(MP.t("Saved")); } catch (err) { MP.toast(err.message, 4000); }
