@@ -4,6 +4,12 @@ Newest first. Each version says what a lab will notice. The version numbers (`MA
 a lab must act on (e.g. a data format older versions can't read), MINOR for new features, PATCH for fixes. The formats
 each version writes are in `mister_plis/formats.py`; every format is described in docs/FORMATS.md.
 
+## 0.23.1 — 2026-11-26
+
+- No example names in the forms: the Title and File name keyword boxes of a tool, a result's title and the sample
+  name boxes of plate layouts and regions on a picture no longer suggest a name ("e.g. WT vs mutant…"). The Title box
+  says what it is for.
+
 ## 0.23.0 — 2026-11-14
 
 - **The basic tools come with MISTER PLIS**: Solution & dilution, Plate assay (96-well, standard curve) and

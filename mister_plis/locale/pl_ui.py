@@ -502,7 +502,6 @@ UI: dict[str, str] = {
     "updates as you type": "obliczenia na bieżąco",
     "File name keyword": "Słowo kluczowe w nazwach plików",
     "optional": "opcjonalnie",
-    "e.g. WT vs mutant, light series 2": "np. WT vs mutant, seria 2",
     "Fill in the values — results appear here instantly.": "Wprowadź wartości — wyniki pojawią się tutaj od razu.",
     "Set the inputs and press": "Wprowadź dane i kliknij",
     "Results show up here.": "Wyniki pojawią się tutaj.",
@@ -596,7 +595,6 @@ UI: dict[str, str] = {
     "{blank} blank · {standard} standard · {sample} sample wells ({samples} samples)":
         "ślepe próby: {blank} · wzorce: {standard} · dołki z próbkami: {sample} (liczba próbek: {samples})",
     "e.g. 2000, 1000, 500, 250, 125, 62.5, 0": "np. 2000, 1000, 500, 250, 125, 62.5, 0",
-    "e.g. WT  or  WT, mut1, mut2": "np. WT  lub  WT, mut1, mut2",
     "1  or  1, 2, 4, 8": "1  lub  1, 2, 4, 8",
     "one per row (A, B, C…)": "po jednej w wierszu (A, B, C…)",
     "one per column (1, 2, 3…)": "po jednej w kolumnie (1, 2, 3…)",
@@ -648,8 +646,6 @@ UI: dict[str, str] = {
     "Title": "Tytuł",
     "Add a title": "Dodaj tytuł",
     "Change title": "Zmień tytuł",
-    "e.g. WT vs mutant, day 3": "np. WT vs mutant, dzień 3",
-    "e.g. WT vs mutant, day 3 — shown after the tool name": "np. WT vs mutant, dzień 3 — wyświetlany po nazwie narzędzia",
     # --- Storage (System & updates; mister_plis/storage.py) ----------------------------------------------------
     "Use another folder": "Użyj innego folderu",
     "The jobs and the tools' saved data are copied there and checked file by file, then the server restarts with the new folder. The old folders are kept, renamed. Not while jobs are running.":
@@ -1179,6 +1175,7 @@ UI: dict[str, str] = {
     "The job's process couldn't be started: {error}": 'Nie udało się uruchomić procesu zadania: {error}',
     # circles on a picture (ImageSpots, toolkit 1.3)
     "Enter a radius": "Podaj promień",
+    "Shown after the tool name": "Wyświetlany po nazwie narzędzia",
     "Add regions": "Dodawaj obszary",
     "Your changes to the regions were kept: press Place again to place them from the settings.": "Zachowano twoje zmiany obszarów: kliknij Rozmieść ponownie, aby rozmieścić je według ustawień.",
     "Clear all sample names?": "Wyczyścić wszystkie nazwy próbek?",
